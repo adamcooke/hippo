@@ -119,11 +119,11 @@ module Hippo
         info 'You can configure config maps using the following commands:'
         puts
         config_maps.each do |map|
-          puts "  ✏️   kubectl -n #{@stage.namespace} edit cm #{map['metadata']['name']}"
+          puts '  ✏️   ' + @stage.kubectl("edit cm #{map['metadata']['name']}")
         end
 
         secrets.each do |map|
-          puts "  🔑  kubectl -n #{@stage.namespace} edit secret #{map['metadata']['name']}"
+          puts '  🔑   ' + @stage.kubectl("edit secret #{map['metadata']['name']}")
         end
       end
       puts
@@ -151,9 +151,9 @@ module Hippo
       success 'Deployments applied successfully'
       puts 'You can watch the deployment progressing using the command below:'
       puts
-      puts "  ⏰  kubectl -n #{@stage.namespace} get pods --watch"
+      puts "  ⏰  #{@stage.kubectl('get pods --watch')}"
       deployments.each do |deployment|
-        puts "  👩🏼‍💻  kubectl -n #{@stage.namespace} describe deployment #{deployment['metadata']['name']}"
+        puts '  👩🏼‍💻  ' + @stage.kubectl("describe deployment #{deployment['metadata']['name']}")
       end
       puts
     end
@@ -245,7 +245,7 @@ module Hippo
                else
                  '❌'
                end
-        puts "  #{icon}  kubectl -n #{@stage.namespace} logs job/#{job['metadata']['name']}"
+        puts "  #{icon}  " + @stage.kubectl("logs job/#{job['metadata']['name']}")
       end
       puts
 

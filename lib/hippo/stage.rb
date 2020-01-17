@@ -26,5 +26,9 @@ module Hippo
         'vars' => @options['vars'] || {}
       }
     end
+
+    def kubectl(*command)
+      "kubectl -n #{namespace} #{command.join(' ')}"
+    end
   end
 end

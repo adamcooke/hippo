@@ -82,6 +82,13 @@ module Hippo
       end
     end
 
+    # Return configuration
+    #
+    # @return []
+    def console
+      @hash['console']
+    end
+
     # Return the template variables that should be exposed
     #
     # @return [Hash]

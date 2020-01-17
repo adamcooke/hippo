@@ -1,0 +1,22 @@
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: migration
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: myapp
+          image: "{{ builds.app.image-name }}:{{ commit.ref }}"
+          imagePullPolicy: Always
+          command:
+            - bundle
+            - exec
+            - rake
+            - db:migrate
+          envFrom:
+            - configMapRef:
+                name: env-vars

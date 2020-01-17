@@ -1,0 +1,6 @@
+name: staging
+branch: master
+namespace: myapp-staging
+vars:
+  example: Hello world!
+  hostname: myapp.mydomain.com

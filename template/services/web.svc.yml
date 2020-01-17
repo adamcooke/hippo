@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: web
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    process_type: web

@@ -1,0 +1,22 @@
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: load-schema
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: myapp
+          image: "{{ builds.app.image-name }}:{{ commit.ref }}"
+          imagePullPolicy: Always
+          command:
+            - bundle
+            - exec
+            - rake
+            - db:schema:load
+          envFrom:
+            - configMapRef:
+                name: env-vars

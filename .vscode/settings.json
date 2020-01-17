@@ -1,0 +1,6 @@
+{
+  "terminal.integrated.env.osx": {
+    "KATAPULT_ENV":"development"
+  },
+  "editor.formatOnSave": true
+}

@@ -1,0 +1,19 @@
+# Welcome to your Hippofile 🦛
+#
+# In here you configure how you wish to build, publish and
+# deploy your application using Docker & Kubernetes.
+
+# Where is the application that you wish to deploy hosted?
+repository:
+  url: git@github.com:username/repo
+
+# You can request multiple builds from the same repository to be built if
+# required. In most cases you'll probably only need one. You can reference
+# these in your Kubernetes objects to specify image details in PodSpecs.
+builds:
+  app:
+    dockerfile: Dockerfile
+    # This is the name of the image where the built-image should be uploaded
+    # to when build. You should not include any tag after the name. The
+    # commit ref that you're building will be automatically added.
+    image-name: myorg/myapp

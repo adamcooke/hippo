@@ -27,11 +27,16 @@ command :deploy do
       steps.build
       steps.publish
     end
+
+    steps.apply_configuration
+    steps.apply_secrets
+
     unless context.options[:upgrade] == false
       if steps.upgrade == false
         raise Hippo::Error, 'Not all jobs completed successfully. Cannot continue with deployment.'
       end
     end
+
     steps.apply_services
     steps.deploy
   end

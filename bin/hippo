@@ -3,6 +3,7 @@
 
 $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
 
+require 'hippo'
 require 'hippo/error'
 require 'hippo/version'
 require 'swamp/cli'

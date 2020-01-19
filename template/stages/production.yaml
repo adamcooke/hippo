@@ -1,6 +1,6 @@
-name: staging
+name: production
 branch: master
-namespace: myapp-staging
+namespace: myapp-production
 vars:
   example: Hello world!
   hostname: myapp.mydomain.com

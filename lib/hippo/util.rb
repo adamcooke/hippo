@@ -9,8 +9,12 @@ module Hippo
       return nil if path.nil?
       return nil unless File.file?(path)
 
-      file_data = File.read(path)
-      parts = file_data.split(/^\-\-\-$/)
+      data = File.read(path)
+      load_yaml_from_data(data, path)
+    end
+
+    def load_yaml_from_data(data, path = nil)
+      parts = data.split(/^\-\-\-$/)
       parts.each_with_index.map do |part, index|
         YAMLPart.new(part, path, index)
       end
@@ -26,6 +30,21 @@ module Hippo
 
         array << yaml
       end.flatten
+    end
+
+    def open_in_editor(name, contents)
+      tmp_root = File.join(ENV['HOME'], '.hippo')
+      FileUtils.mkdir_p(tmp_root)
+      begin
+        tmpfile = Tempfile.new([name, '.yaml'], tmp_root)
+        tmpfile.write(contents)
+        tmpfile.close
+        system("#{ENV['EDITOR']} #{tmpfile.path}")
+        tmpfile.open
+        tmpfile.read
+      ensure
+        tmpfile.unlink
+      end
     end
   end
 end

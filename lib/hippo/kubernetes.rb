@@ -66,11 +66,13 @@ module Hippo
 
     # Apply the given configuration with kubectl
     #
-    # @param config [Array<Hash>]
+    # @param config [Array<Hippo::YAMLPart>, String]
     # @return [void]
     def apply_with_kubectl(yaml_parts)
-      yaml_parts = [yaml_parts] unless yaml_parts.is_a?(Array)
-      yaml_parts = yaml_parts.map { |yp| yp.hash.to_yaml }.join("\n---\n")
+      unless yaml_parts.is_a?(String)
+        yaml_parts = [yaml_parts] unless yaml_parts.is_a?(Array)
+        yaml_parts = yaml_parts.map { |yp| yp.hash.to_yaml }.join("\n---\n")
+      end
 
       Open3.popen3('kubectl apply -f -') do |stdin, stdout, stderr, wt|
         stdin.puts yaml_parts

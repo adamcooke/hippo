@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-command :setup do
-  desc 'Set up the Kubernetes cluster by installing configuration as needed'
+command :'apply-config' do
+  desc 'Apply configuration'
 
   option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
     options[:hippofile] = value.to_s
@@ -10,6 +10,7 @@ command :setup do
   action do |context|
     require 'hippo/cli_steps'
     steps = Hippo::CLISteps.setup(context)
-    steps.setup
+    steps.apply_config
+    steps.apply_secrets
   end
 end

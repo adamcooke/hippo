@@ -92,43 +92,6 @@ module Hippo
       end
     end
 
-    # This will set up the cluster ready to receive the rest of the
-    # application at a later date. Once complete, you'll be able to
-    # configure that's needed.
-    def setup
-      action "Applying 'setup' objects to Kubernetes"
-      config = @recipe.kubernetes.objects('setup', @stage, @commit)
-      external_command do
-        @recipe.kubernetes.apply_with_kubectl(config)
-      end
-
-      success 'Setup has completed successfully. '
-      puts 'You can now do any configuration needed in advance of actually'
-      puts "running the application. When you're ready run `hippo install`"
-      puts 'to run installation jobs.'
-      puts
-
-      config_maps = @recipe.kubernetes.get_with_kubectl(@stage, 'configmaps')
-      secrets = @recipe.kubernetes.get_with_kubectl(@stage, 'secrets').reject do |s|
-        s['metadata']['name'] =~ /\Adefault\-token/
-      end
-
-      if config_maps.empty? && secrets.empty?
-        info 'There are no config maps or secrets to configure.'
-      else
-        info 'You can configure config maps using the following commands:'
-        puts
-        config_maps.each do |map|
-          puts '  ✏️   ' + @stage.kubectl("edit cm #{map['metadata']['name']}")
-        end
-
-        secrets.each do |map|
-          puts '  🔑   ' + @stage.kubectl("edit secret #{map['metadata']['name']}")
-        end
-      end
-      puts
-    end
-
     def install
       run_jobs('install')
     end
@@ -169,6 +132,35 @@ module Hippo
         end
         success 'Services applied successfully'
       end
+    end
+
+    def apply_config
+      action 'Applying configuration'
+      objects = @recipe.kubernetes.objects("config/#{@stage.name}", @stage, @commit)
+      if objects.empty?
+        info 'No configuration files have been defined'
+      else
+        external_command do
+          @recipe.kubernetes.apply_with_kubectl(objects)
+        end
+        success 'Configuration applied successfully'
+      end
+    end
+
+    def apply_secrets
+      require 'hippo/secret_manager'
+      action 'Applying secrets'
+      manager = SecretManager.new(@recipe, @stage)
+      unless manager.key_available?
+        error 'No secret encryption key was available. Not applying secrets.'
+        return
+      end
+
+      yamls = manager.secrets.map(&:to_secret_yaml).join("---\n")
+      external_command do
+        @recipe.kubernetes.apply_with_kubectl(yamls)
+      end
+      success 'Secrets applicated successfully'
     end
 
     private

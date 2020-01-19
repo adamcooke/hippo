@@ -28,6 +28,9 @@ command :install do
       steps.publish
     end
 
+    steps.apply_configuration
+    steps.apply_secrets
+
     if steps.install == false
       raise Hippo::Error, 'Not all installation jobs completed successfully. Cannot continue to deploy.'
     end

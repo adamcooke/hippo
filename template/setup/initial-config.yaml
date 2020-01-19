@@ -1,8 +1,0 @@
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: env-vars
-data:
-  SECRET_KEY_BASE: fef19f62be7172ed9c0be254c7ca0e74cee0690d0836fa5d467390932be11048dd93828ad5603d0f7ad37ab2cffad6ae4041731bfa7b66fbab1430558b773933
-  DATABASE_URL: mysql2://myapp:password@mysql.default/myapp
-  RACK_TRUSTED_PROXIES: 127.0.0.1 ::1 10.217.0.0/16

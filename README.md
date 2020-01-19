@@ -20,7 +20,8 @@ A manifest is a few files contained within a directory. At the root of the direc
 
 - `Hippofile` - contains details of your repository and images
 - `stages/` - contains configuration for each stage you wish to be able to deploy (production, staging etc...)
-- `setup/` - contains k8s objects which are applied as part of bootstrapping your application onto a new cluster
+- `configs/[stage]/` - contains configuration objects (ConfigMaps or self-managed Secrets).
+- `secrets[stage]/` - contains encrypted Secret objects (managed with `hippo secret [stage] [name]`)
 - `jobs/install/` - contains k8s Job objects which are run before the first deployment
 - `jobs/upgrade/` - contains k8s Job objects which are run before each subsequent deployment
 - `deployments/` - contains k8s deployment objects defining how you wish your application to be deployed
@@ -39,30 +40,19 @@ You should now configure your stages too. You can follow the example in the `sta
 
 Before you can do much else, you'll need to make sure your application runs happily and can be built using its Dockerfile. Make sure you can build and publish your images in your repository and ensure that you commit and push any updates you make. Hippo works with a clean copy of your repository from the URL provided in your Hippofile.
 
-### Bootstrap your Kubernetes cluster
+### Add configuration
 
-**Note:** Hippo uses `kubectl` to access your cluster. You need to configure this and be sure you are in the correct context before using any Hippo commands or you may experience errors or accidentally deploy to the wrong cluster.
-
-Next, you need to get your cluster into a state ready to receive your application. We do not wish to store too much environment specific configuration in your repository (although you can store `vars` in the stages configuration if you need to).
-
-The idea of this _setup_ step is to create a new of initial configuration ConfigMaps and Secrets that you can then edit in place on the cluster. You should define the example config files in `setup/[whatever].yaml`.
-
-You can then run the `setup` command from the root of your manifest directory (or from anywhere else by passing the `--hippofile` option).
+You can add your configuration data into `configs/[stage]/` as ConfigMap objects or you can use Hippo's built-in encrypted secrets. To add a secret:
 
 ```
-$ hippo setup staging
+$ hippo secret staging my-secrets
 ```
 
-At this point, you'll want to go ahead and edit any configuration that you've added to make sure it is suitable. Your application is not yet on the cluster. Something like below might be useful and is printed to your terminal when you run setup.
-
-```
-$ kubectl -n myapp-staging edit cm env-vars
-$ kubectl -n myapp-staging edit secret tls-certs
-```
+This will open an editor and allow you to define your secrets. When you close your editor, they will be encrypted saved into the `secrets/[stage]/` directory. The key for encryption is managed by Hippo and uploaded as its own secret called `hippo-secret-key`.
 
 ### Installing the application
 
-It's very likely that you'll want to run some additional bootstrapping tasks once you have set up the cluster. This is the job of the `install` task. This task will run any jobs that you define in `jobs/install/[whatever].yaml`.
+It's very likely that you'll want to run different tasks on initial setup. This is the job of the `install` task. This task will run any jobs that you define in `jobs/install/[whatever].yaml`.
 
 For exampe, you might use this to populate a database that you have no configured.
 

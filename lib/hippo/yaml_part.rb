@@ -16,12 +16,27 @@ module Hippo
       raise Error, "YAML parsing error in #{@path} (index #{@index}) (#{e.message})"
     end
 
+    def empty?
+      @yaml.nil? ||
+        @yaml.empty? ||
+        hash.nil? ||
+        hash.empty?
+    end
+
+    def to_yaml
+      hash.to_yaml
+    end
+
     def dig(*args)
       hash.dig(*args)
     end
 
     def [](name)
       hash[name]
+    end
+
+    def []=(name, value)
+      hash[name] = value
     end
 
     def parse(recipe, stage, commit)

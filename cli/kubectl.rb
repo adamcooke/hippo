@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-command :kube do
+command :kubectl do
   desc 'Execute kubectl commands with the correct namespace for the stage'
 
   option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|

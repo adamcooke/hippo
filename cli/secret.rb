@@ -15,7 +15,7 @@ command :secret do
     require 'hippo/cli_steps'
     steps = Hippo::CLISteps.setup(context)
 
-    secret_name = context.args[1]
+    secret_name = context.args[0]
     raise Hippo::Error, 'You must provide a secret name' if secret_name.nil?
 
     require 'hippo/secret_manager'

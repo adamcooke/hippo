@@ -40,17 +40,7 @@ module Hippo
     end
 
     def parse(recipe, stage, commit)
-      template = Liquid::Template.parse(@yaml)
-      template_variables = recipe.template_vars
-      template_variables['stage'] = stage.template_vars
-      if commit
-        template_variables['commit'] = {
-          'ref' => commit.objectish,
-          'message' => commit.message
-        }
-      end
-      parsed_part = template.render(template_variables)
-
+      parsed_part = recipe.parse(stage, commit, @yaml)
       self.class.new(parsed_part, @path, @index)
     end
   end

@@ -3,6 +3,10 @@
 command :objects do
   desc 'Build and publish an image for the given stage'
 
+  option '-s', '--stage [STAGE]', 'The name of the stage' do |value, options|
+    options[:stage] = value.to_s
+  end
+
   option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
     options[:hippofile] = value.to_s
   end
@@ -14,7 +18,7 @@ command :objects do
   action do |context|
     require 'hippo/cli_steps'
     steps = Hippo::CLISteps.setup(context)
-    steps.prepare_repository
+    steps.prepare_repository(fetch: false)
     commit = steps.recipe.repository.commit_for_branch(steps.stage.branch)
 
     if context.options[:types].nil? || context.options[:types].include?('all')
@@ -31,6 +35,6 @@ command :objects do
     end
 
     puts '---'
-    puts objects.map { |o| o.hash.to_yaml }.join("\n---\n")
+    puts objects.map { |o| o.hash.to_yaml }
   end
 end

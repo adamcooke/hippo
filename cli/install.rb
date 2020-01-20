@@ -3,6 +3,10 @@
 command :install do
   desc 'Run installation jobs for the application'
 
+  option '-s', '--stage [STAGE]', 'The name of the stage' do |value, options|
+    options[:stage] = value.to_s
+  end
+
   option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
     options[:hippofile] = value.to_s
   end
@@ -21,17 +25,17 @@ command :install do
     if context.options[:build] == false
       commit = steps.recipe.repository.commit_for_branch(steps.stage.branch)
       puts 'Not building an image and just hoping one exists for current commit.'
-      puts "Using #{commit.objectish} from #{steps.stage.branch}"
+      steps.prepare_repository(fetch: false)
     else
       steps.prepare_repository
       steps.build
       steps.publish
     end
 
-    steps.apply_configuration
+    steps.apply_config
     steps.apply_secrets
 
-    if steps.install == false
+    if steps.run_install_jobs == false
       raise Hippo::Error, 'Not all installation jobs completed successfully. Cannot continue to deploy.'
     end
 

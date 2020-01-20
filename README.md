@@ -23,7 +23,7 @@ A manifest is a few files contained within a directory. At the root of the direc
 - `configs/[stage]/` - contains configuration objects (ConfigMaps or self-managed Secrets).
 - `secrets[stage]/` - contains encrypted Secret objects (managed with `hippo secret [stage] [name]`)
 - `jobs/install/` - contains k8s Job objects which are run before the first deployment
-- `jobs/upgrade/` - contains k8s Job objects which are run before each subsequent deployment
+- `jobs/deploy/` - contains k8s Job objects which are run before each subsequent deployment
 - `deployments/` - contains k8s deployment objects defining how you wish your application to be deployed
 - `services/` - contains k8s service & ingress objects defining how you wish to expose the application
 

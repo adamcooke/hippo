@@ -16,16 +16,23 @@ module Hippo
 
     # Prepare the repository for this build by getting the latest
     # version from the remote and checking out the branch.
-    def prepare_repository
+    def prepare_repository(fetch: false)
       info "Using repository #{@recipe.repository.url}"
-      if @recipe.repository.cloned?
-        info 'Repository is already cloned'
-        action 'Fetching the latest repository data...'
-        @recipe.repository.fetch
+      if fetch
+        if @recipe.repository.cloned?
+          info 'Repository is already cloned'
+          action 'Fetching the latest repository data...'
+          @recipe.repository.fetch
+        else
+          info 'Repository is not yet cloned.'
+          action 'Cloning repository...'
+          @recipe.repository.clone
+        end
+
+      elsif !fetch && !@recipe.repository.cloned?
+        raise Error, 'Repository is not cloned yet so cannot continue'
       else
-        info 'Repository is not yet cloned.'
-        action 'Cloning repository...'
-        @recipe.repository.clone
+        info 'Not fetching latest repository, using cached copy'
       end
 
       action "Checking out '#{@stage.branch}' branch..."
@@ -92,12 +99,12 @@ module Hippo
       end
     end
 
-    def install
+    def run_install_jobs
       run_jobs('install')
     end
 
-    def upgrade
-      run_jobs('upgrade')
+    def run_deploy_jobs
+      run_jobs('deploy')
     end
 
     def deploy
@@ -246,12 +253,13 @@ module Hippo
 
     class << self
       def setup(context)
-        stage_name = context.args[0]
+        recipe = Hippo::Recipe.load_from_file(context.options[:hippofile] || './Hippofile')
+
+        stage_name = context.options[:stage] || recipe.default_stage
         if stage_name.nil?
-          raise Error, 'Must pass a stage name as the first argument'
+          raise Error, 'Must pass a stage name as --stage (or -s) or define a default stage'
         end
 
-        recipe = Hippo::Recipe.load_from_file(context.options[:hippofile] || './Hippofile')
         stage = recipe.stages[stage_name]
         if stage.nil?
           raise Error, "Invalid stage name `#{stage_name}`. Check this has been defined in in your stages directory with a matching name?"

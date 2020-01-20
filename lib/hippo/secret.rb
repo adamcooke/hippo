@@ -45,7 +45,7 @@ module Hippo
         part['kind'] = 'Secret'
         part['metadata'] ||= {}
         part['metadata']['namespace'] = @manager.stage.namespace
-        
+
         part['data'].each do |key, value|
           part['data'][key] = Base64.encode64(value).gsub("\n", '').strip
         end
@@ -156,6 +156,7 @@ module Hippo
       parts = parts.map(&:to_yaml).join("---\n")
       data_to_write = HEADER + "\n" + parts
 
+      FileUtils.mkdir_p(File.dirname(path))
       File.open(path, 'w') do |f|
         f.write(data_to_write)
       end

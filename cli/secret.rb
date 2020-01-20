@@ -3,6 +3,10 @@
 command :secret do
   desc 'Create/edit an encrypted secrets file'
 
+  option '-s', '--stage [STAGE]', 'The name of the stage' do |value, options|
+    options[:stage] = value.to_s
+  end
+
   option '--create-key', 'Create a new encryption key if missing' do |_value, options|
     options[:create_key] = true
   end

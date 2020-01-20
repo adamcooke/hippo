@@ -53,6 +53,13 @@ module Hippo
       @repository ||= Repository.new(@hash['repository'])
     end
 
+    # Return the default stage name
+    #
+    # @return [Hippo::Stage, nil]
+    def default_stage
+      @hash['default_stage']
+    end
+
     # Return kubernetes configuration
     #
     # @return [Hippo::Kubernetes]
@@ -97,6 +104,23 @@ module Hippo
         'repository' => repository ? repository.template_vars : nil,
         'builds' => build_specs.each_with_object({}) { |(_, bs), h| h[bs.name] = bs.template_vars }
       }
+    end
+
+    # Parse a string through the template parser
+    #
+    # @param string [String]
+    # @return [String]
+    def parse(stage, commit, string)
+      template = Liquid::Template.parse(string)
+      template_variables = template_vars
+      template_variables['stage'] = stage.template_vars
+      if commit
+        template_variables['commit'] = {
+          'ref' => commit.objectish,
+          'message' => commit.message
+        }
+      end
+      template.render(template_variables)
     end
   end
 end

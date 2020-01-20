@@ -5,7 +5,7 @@ require 'hippo/util'
 
 module Hippo
   class Kubernetes
-    OBJECT_DIRECTORY_NAMES = %w[deployments jobs/install jobs/upgrade setup services].freeze
+    OBJECT_DIRECTORY_NAMES = %w[deployments jobs/install jobs/deploy services].freeze
 
     include Hippo::Util
 

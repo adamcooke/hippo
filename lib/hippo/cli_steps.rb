@@ -142,6 +142,12 @@ module Hippo
       end
     end
 
+    def apply_namespace
+      action 'Applying namespace'
+      external_command { @recipe.kubernetes.apply_namespace(@stage) }
+      success 'Namespace applied successfully'
+    end
+
     def apply_config
       action 'Applying configuration'
       objects = @recipe.kubernetes.objects('config', @stage, @commit)

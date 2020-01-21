@@ -60,6 +60,13 @@ module Hippo
       @hash['default_stage']
     end
 
+    # Return the app name
+    #
+    # @return [String, nil]
+    def name
+      @hash['name']
+    end
+
     # Return kubernetes configuration
     #
     # @return [Hippo::Kubernetes]

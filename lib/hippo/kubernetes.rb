@@ -44,6 +44,8 @@ module Hippo
         object['metadata']['annotations']['hippo.adam.ac/builtAt'] ||= time.to_s
         object['metadata']['annotations']['hippo.adam.ac/builtBy'] ||= ENV['USER'] || 'unknown'
 
+        add_default_labels(object, stage)
+
         # Add some information to Deployments to reflect the latest
         # information about this deployment.
         if object['kind'] == 'Deployment'
@@ -64,6 +66,18 @@ module Hippo
 
         object
       end
+    end
+
+    def apply_namespace(stage)
+      namespace = {
+        'kind' => 'Namespace',
+        'apiVersion' => 'v1',
+        'metadata' => {
+          'name' => stage.namespace
+        }
+      }
+      add_default_labels(namespace, stage)
+      apply_with_kubectl(namespace.to_yaml)
     end
 
     # Apply the given configuration with kubectl
@@ -171,6 +185,16 @@ module Hippo
         end
       end
       [true, jobs]
+    end
+
+    private
+
+    def add_default_labels(object, stage)
+      object['metadata']['labels'] ||= {}
+      object['metadata']['labels']['app.kubernetes.io/name'] = @recipe.name
+      object['metadata']['labels']['app.kubernetes.io/instance'] = stage.name
+      object['metadata']['labels']['app.kubernetes.io/managed-by'] = 'hippo'
+      object
     end
   end
 end

@@ -33,6 +33,7 @@ command :deploy do
       steps.publish
     end
 
+    steps.apply_namespace
     steps.apply_config
     steps.apply_secrets
 

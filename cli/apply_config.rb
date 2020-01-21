@@ -14,6 +14,7 @@ command :'apply-config' do
   action do |context|
     require 'hippo/cli_steps'
     steps = Hippo::CLISteps.setup(context)
+    steps.apply_namespace
     steps.apply_config
     steps.apply_secrets
   end

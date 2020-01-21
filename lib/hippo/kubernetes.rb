@@ -5,7 +5,7 @@ require 'hippo/util'
 
 module Hippo
   class Kubernetes
-    OBJECT_DIRECTORY_NAMES = %w[deployments jobs/install jobs/deploy services].freeze
+    OBJECT_DIRECTORY_NAMES = %w[config deployments jobs/install jobs/deploy services].freeze
 
     include Hippo::Util
 
@@ -26,6 +26,8 @@ module Hippo
       time = Time.now
 
       yamls = load_yaml_from_directory(path)
+      yamls |= load_yaml_from_directory(File.join(path, stage.name))
+
       yamls.map do |yaml_part|
         object = yaml_part.parse(@recipe, stage, commit)
 

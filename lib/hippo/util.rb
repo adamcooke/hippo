@@ -24,7 +24,7 @@ module Hippo
       return [] if path.nil?
       return [] unless File.directory?(path)
 
-      Dir[File.join(path, '**', '*.{yaml,yml}')].sort.each_with_object([]) do |path, array|
+      Dir[File.join(path, '*.{yaml,yml}')].sort.each_with_object([]) do |path, array|
         yaml = load_yaml_from_path(path)
         next if yaml.nil?
 

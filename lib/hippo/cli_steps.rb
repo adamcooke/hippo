@@ -16,7 +16,7 @@ module Hippo
 
     # Prepare the repository for this build by getting the latest
     # version from the remote and checking out the branch.
-    def prepare_repository(fetch: false)
+    def prepare_repository(fetch: true)
       info "Using repository #{@recipe.repository.url}"
       if fetch
         if @recipe.repository.cloned?
@@ -40,6 +40,7 @@ module Hippo
       @commit = @recipe.repository.commit
       info "Latest commit on branch is #{@commit.objectish}"
       info "Message: #{@commit.message.split("\n").first}"
+      @commit
     end
 
     def build
@@ -143,7 +144,7 @@ module Hippo
 
     def apply_config
       action 'Applying configuration'
-      objects = @recipe.kubernetes.objects("config/#{@stage.name}", @stage, @commit)
+      objects = @recipe.kubernetes.objects('config', @stage, @commit)
       if objects.empty?
         info 'No configuration files have been defined'
       else

@@ -18,8 +18,7 @@ command :objects do
   action do |context|
     require 'hippo/cli_steps'
     steps = Hippo::CLISteps.setup(context)
-    steps.prepare_repository(fetch: false)
-    commit = steps.recipe.repository.commit_for_branch(steps.stage.branch)
+    commit = steps.prepare_repository(fetch: false)
 
     if context.options[:types].nil? || context.options[:types].include?('all')
       types = Hippo::Kubernetes::OBJECT_DIRECTORY_NAMES
@@ -34,7 +33,6 @@ command :objects do
       objects |= steps.recipe.kubernetes.objects(type, steps.stage, commit)
     end
 
-    puts '---'
     puts objects.map { |o| o.hash.to_yaml }
   end
 end

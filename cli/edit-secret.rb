@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-command :secret do
+command :'edit-secret' do
   desc 'Create/edit an encrypted secrets file'
 
   option '-s', '--stage [STAGE]', 'The name of the stage' do |value, options|

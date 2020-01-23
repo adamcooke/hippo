@@ -2,7 +2,7 @@
 
 require File.expand_path('lib/hippo/version', __dir__)
 Gem::Specification.new do |s|
-  s.name          = 'hippo'
+  s.name          = 'hippo-cli'
   s.description   = 'A utility tool for deploying and building with Docker & Kubernetes'
   s.summary       = s.description
   s.homepage      = 'https://github.com/adamcooke/hippo'

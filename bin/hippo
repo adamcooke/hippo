@@ -8,13 +8,25 @@ require 'hippo/error'
 require 'hippo/version'
 require 'swamp/cli'
 
+COMMANDS_WITHOUT_STAGE = %w[help init].freeze
+
 begin
   cli = Swamp::CLI.new(:hippo, version: Hippo::VERSION)
   cli.load_from_directory(File.expand_path('../cli', __dir__))
-  if ARGV.empty?
-    cli.dispatch(['help'])
+
+  args = ARGV.dup
+  stage = args.shift
+  command = args.shift
+
+  if COMMANDS_WITHOUT_STAGE.include?(stage) || (command.nil? && stage.nil?)
+    cli.dispatch([stage || 'help'])
+  elsif command.nil?
+    puts 'usage: hippo [STAGE] [COMMAND] {options}'
+    puts '(Be sure to specify the stage name before the command)'
+    exit 2
   else
-    cli.dispatch(ARGV)
+    CURRENT_STAGE = stage
+    cli.dispatch([command] + args)
   end
 rescue Swamp::Error, Hippo::Error => e
   warn "\e[31mError: #{e.message}\e[0m"

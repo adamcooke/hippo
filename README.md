@@ -45,7 +45,7 @@ Before you can do much else, you'll need to make sure your application runs happ
 You can add your configuration data into `configs/[stage]/` as ConfigMap objects or you can use Hippo's built-in encrypted secrets. To add a secret:
 
 ```
-$ hippo secret staging my-secrets
+$ hippo staging edit-secret my-secret
 ```
 
 This will open an editor and allow you to define your secrets. When you close your editor, they will be encrypted saved into the `secrets/[stage]/` directory. The key for encryption is managed by Hippo and uploaded as its own secret called `hippo-secret-key`.
@@ -59,7 +59,7 @@ For exampe, you might use this to populate a database that you have no configure
 This is the first time that Hippo will actually try and build and publish an image for your application too. These steps are run in whatever the HEAD commit of the stage branch is set to.
 
 ```
-$ hippo install staging
+$ hippo staging install
 ```
 
 This will also run the first deployment of your application and apply any service configuration that you've defined in `services`.
@@ -69,5 +69,5 @@ This will also run the first deployment of your application and apply any servic
 When you next wish to deploy you should use the `deploy` command. This is the task that you'll run most often when you make changes to your application. It encapsulates the process of building your image, publishing it to a registry, running any pre-deployment tasks (like database migrations) and then making your new image live.
 
 ```
-$ hippo deploy staging
+$ hippo staging deploy
 ```

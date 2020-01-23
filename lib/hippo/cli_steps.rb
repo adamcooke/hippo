@@ -262,14 +262,9 @@ module Hippo
       def setup(context)
         recipe = Hippo::Recipe.load_from_file(context.options[:hippofile] || './Hippofile')
 
-        stage_name = context.options[:stage] || recipe.default_stage
-        if stage_name.nil?
-          raise Error, 'Must pass a stage name as --stage (or -s) or define a default stage'
-        end
-
-        stage = recipe.stages[stage_name]
+        stage = recipe.stages[CURRENT_STAGE]
         if stage.nil?
-          raise Error, "Invalid stage name `#{stage_name}`. Check this has been defined in in your stages directory with a matching name?"
+          raise Error, "Invalid stage name `#{CURRENT_STAGE}`. Check this has been defined in in your stages directory with a matching name?"
         end
 
         new(recipe, stage)

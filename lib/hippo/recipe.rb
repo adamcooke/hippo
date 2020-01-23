@@ -53,13 +53,6 @@ module Hippo
       @repository ||= Repository.new(@hash['repository'])
     end
 
-    # Return the default stage name
-    #
-    # @return [Hippo::Stage, nil]
-    def default_stage
-      @hash['default_stage']
-    end
-
     # Return the app name
     #
     # @return [String, nil]

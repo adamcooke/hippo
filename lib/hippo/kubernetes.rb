@@ -22,7 +22,7 @@ module Hippo
     # @param commit [String] the commit ref
     # @param path [String]
     # @return
-    def objects(path, stage, commit)
+    def objects(path, stage, commit, deploy_id: nil)
       time = Time.now
 
       yamls = load_yaml_from_directory(path)
@@ -38,28 +38,33 @@ module Hippo
           object['metadata']['namespace'] = stage.namespace
         end
 
-        # Add our own details to the metadata of all objets created by us so
-        # we know where they came from.
         object['metadata']['annotations'] ||= {}
-        object['metadata']['annotations']['hippo.adam.ac/builtAt'] ||= time.to_s
-        object['metadata']['annotations']['hippo.adam.ac/builtBy'] ||= ENV['USER'] || 'unknown'
+        object['metadata']['labels'] ||= {}
 
         add_default_labels(object, stage)
 
         # Add some information to Deployments to reflect the latest
         # information about this deployment.
         if object['kind'] == 'Deployment'
-          object['metadata']['annotations']['hippo.adam.ac/deployID'] ||= time.to_i.to_s
+          if deploy_id
+            object['metadata']['labels']['hippo.adam.ac/deployID'] ||= deploy_id
+          end
+
           if commit
             object['metadata']['annotations']['hippo.adam.ac/commitRef'] ||= commit.objectish
             object['metadata']['annotations']['hippo.adam.ac/commitMessage'] ||= commit.message
           end
 
           if pod_metadata = object.dig('spec', 'template', 'metadata')
+            pod_metadata['labels'] ||= {}
             pod_metadata['annotations'] ||= {}
-            pod_metadata['annotations']['hippo.adam.ac/deployID'] ||= time.to_i.to_s
+            # add_default_labels(pod_metadata, stage)
+            if deploy_id
+              pod_metadata['labels']['hippo.adam.ac/deployID'] = deploy_id
+            end
+
             if commit
-              pod_metadata['annotations']['hippo.adam.ac/commitRef'] ||= commit.objectish
+              pod_metadata['annotations']['hippo.adam.ac/commitRef'] = commit.objectish
             end
           end
         end

@@ -26,7 +26,7 @@ command :objects do
     types.each do |type|
       next unless Hippo::Kubernetes::OBJECT_DIRECTORY_NAMES.include?(type)
 
-      objects |= steps.recipe.kubernetes.objects(type, steps.stage, commit)
+      objects += steps.recipe.kubernetes.objects(type, steps.stage, commit, deploy_id: 'preview')
     end
 
     puts objects.map { |o| o.hash.to_yaml }

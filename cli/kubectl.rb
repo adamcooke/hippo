@@ -10,7 +10,8 @@ command :kubectl do
   action do |context|
     require 'hippo/cli_steps'
     cli = Hippo::CLISteps.setup(context)
-    ARGV.shift
+    ARGV.shift(2)
+    ARGV.delete('--')
     exec cli.stage.kubectl(*ARGV)
   end
 end

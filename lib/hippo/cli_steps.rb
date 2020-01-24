@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'open3'
+require 'digest'
 require 'hippo/error'
 require 'hippo/recipe'
 
@@ -110,7 +111,8 @@ module Hippo
 
     def deploy
       action 'Applying deployments'
-      deployments = @recipe.kubernetes.objects('deployments', @stage, @commit)
+      @deploy_id = Digest::SHA1.hexdigest(Time.now.to_f.to_s)[0, 10]
+      deployments = @recipe.kubernetes.objects('deployments', @stage, @commit, deploy_id: @deploy_id)
 
       if deployments.nil?
         info 'No deployments file configured. Not applying any deployments'
@@ -120,13 +122,51 @@ module Hippo
         @recipe.kubernetes.apply_with_kubectl(deployments)
       end
       success 'Deployments applied successfully'
-      puts 'You can watch the deployment progressing using the command below:'
-      puts
-      puts "  ⏰  #{@stage.kubectl('get pods --watch')}"
-      deployments.each do |deployment|
-        puts '  👩🏼‍💻  ' + @stage.kubectl("describe deployment #{deployment['metadata']['name']}")
+      puts 'Waiting for all deployments to rollout...'
+
+      count = 0
+      loop do
+        sleep 4
+        count += 1
+        replica_sets = @recipe.kubernetes.get_with_kubectl(@stage, [
+                                                             'rs',
+                                                             '--selector',
+                                                             'hippo.adam.ac/deployID=' + @deploy_id
+                                                           ])
+        pending_replica_sets = replica_sets.reject do |deploy|
+          deploy['status']['availableReplicas'] == deploy['status']['replicas']
+        end
+
+        names = replica_sets.map { |d| d['metadata']['name'].split('-').first }.join(', ')
+
+        if pending_replica_sets.empty?
+          success 'All deployments have rolled out successfully.'
+          puts
+          replica_sets.each do |rs|
+            name = rs['metadata']['name'].split('-').first
+            quantity = rs['status']['availableReplicas']
+            puts "  * \e[35m#{name}\e[0m has #{quantity} #{quantity == 1 ? 'replica' : 'replicas'}"
+          end
+          puts
+          break
+        else
+          if count == 15
+            error "Looks like things aren't going to plan with some deployments."
+            puts 'You can review potential issues using the commads below:'
+            pending_replica_sets.each do |rs|
+              puts
+              name = rs['metadata']['name'].split('-').first
+              puts "  hippo #{stage.name} kubectl -- describe deployment \e[35m#{name}\e[0m"
+              puts "  hippo #{stage.name} kubectl -- logs deployment/\e[35m#{name}\e[0m --all-containers"
+            end
+            puts
+
+            break
+          else
+            puts 'Waiting for ' + pending_replica_sets.map { |rs| rs['metadata']['name'].split('-').first }.join(', ')
+          end
+        end
       end
-      puts
     end
 
     def apply_services

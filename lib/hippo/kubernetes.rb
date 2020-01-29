@@ -82,20 +82,24 @@ module Hippo
         }
       }
       add_default_labels(namespace, stage)
-      apply_with_kubectl(namespace.to_yaml)
+      apply_with_kubectl(stage, namespace.to_yaml)
     end
 
     # Apply the given configuration with kubectl
     #
     # @param config [Array<Hippo::YAMLPart>, String]
     # @return [void]
-    def apply_with_kubectl(yaml_parts)
+    def apply_with_kubectl(stage, yaml_parts)
       unless yaml_parts.is_a?(String)
         yaml_parts = [yaml_parts] unless yaml_parts.is_a?(Array)
         yaml_parts = yaml_parts.map { |yp| yp.hash.to_yaml }.join("\n---\n")
       end
 
-      Open3.popen3('kubectl apply -f -') do |stdin, stdout, stderr, wt|
+      command = ['kubectl']
+      command += ['--context', stage.context] if stage.context
+      command += ['apply', '-f', '-']
+
+      Open3.popen3(command.join(' ')) do |stdin, stdout, stderr, wt|
         stdin.puts yaml_parts
         stdin.close
 
@@ -122,13 +126,9 @@ module Hippo
     # @raises [Hippo::Error]
     # @return [Array<Hash>]
     def get_with_kubectl(stage, *names)
-      command = [
-        'kubectl',
-        '-n', stage.namespace,
-        'get',
-        names,
-        '-o', 'yaml'
-      ].flatten.reject(&:nil?)
+      command = stage.kubectl_base_command
+      command += ['get', names, '-o', 'yaml']
+      command = command.flatten.reject(&:nil?)
 
       Open3.popen3(*command) do |_, stdout, stderr, wt|
         if wt.value.success?
@@ -147,13 +147,8 @@ module Hippo
     # @raises [Hippo::Error]
     # @return [void]
     def delete_job(stage, name)
-      command = [
-        'kubectl',
-        '-n', stage.namespace,
-        'delete',
-        'job',
-        name
-      ]
+      command = stage.kubectl_base_command
+      command += ['delete', 'job', name]
 
       Open3.popen3(*command) do |_, stdout, stderr, wt|
         if wt.value.success?

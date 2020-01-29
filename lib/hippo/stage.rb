@@ -18,6 +18,10 @@ module Hippo
       @options['namespace']
     end
 
+    def context
+      @options['context']
+    end
+
     def template_vars
       {
         'name' => name,
@@ -28,7 +32,14 @@ module Hippo
     end
 
     def kubectl(*command)
-      "kubectl -n #{namespace} #{command.join(' ')}"
+      (kubectl_base_command + command).join(' ')
+    end
+
+    def kubectl_base_command
+      command = ['kubectl']
+      command += ['--context', context] if context
+      command += ['-n', namespace]
+      command
     end
   end
 end

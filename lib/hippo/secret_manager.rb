@@ -34,7 +34,7 @@ module Hippo
         'metadata' => { 'name' => 'hippo-secret-key', 'namespace' => @stage.namespace },
         'data' => { 'key' => Base64.encode64(secret_key64).gsub("\n", '').strip }
       }
-      @recipe.kubernetes.apply_with_kubectl(object.to_yaml)
+      @recipe.kubernetes.apply_with_kubectl(@stage, object.to_yaml)
       @key = secret_key
     end
 

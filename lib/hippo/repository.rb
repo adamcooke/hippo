@@ -23,7 +23,7 @@ module Hippo
 
       @path ||= begin
         digest = Digest::SHA256.hexdigest(url)
-        File.join('', 'tmp', 'hippo-repos', digest)
+        File.join(ENV['HOME'], '.hippo', 'repos', digest)
       end
     end
 

@@ -61,7 +61,8 @@ module Hippo
           command = [
             'docker', 'build', '.',
             '-f', build_spec.dockerfile,
-            '-t', image_name
+            '-t', image_name,
+            '--build-arg', "commit_ref=#{@commit.objectish}"
           ]
           external_command do
             if system(*command)
@@ -119,7 +120,7 @@ module Hippo
       end
 
       external_command do
-        @recipe.kubernetes.apply_with_kubectl(deployments)
+        @recipe.kubernetes.apply_with_kubectl(@stage, deployments)
       end
       success 'Deployments applied successfully'
       puts 'Waiting for all deployments to rollout...'
@@ -176,7 +177,7 @@ module Hippo
         info 'No services have been defined'
       else
         external_command do
-          @recipe.kubernetes.apply_with_kubectl(objects)
+          @recipe.kubernetes.apply_with_kubectl(@stage, objects)
         end
         success 'Services applied successfully'
       end
@@ -195,7 +196,7 @@ module Hippo
         info 'No configuration files have been defined'
       else
         external_command do
-          @recipe.kubernetes.apply_with_kubectl(objects)
+          @recipe.kubernetes.apply_with_kubectl(@stage, objects)
         end
         success 'Configuration applied successfully'
       end
@@ -212,7 +213,7 @@ module Hippo
 
       yamls = manager.secrets.map(&:to_secret_yaml).join("---\n")
       external_command do
-        @recipe.kubernetes.apply_with_kubectl(yamls)
+        @recipe.kubernetes.apply_with_kubectl(@stage, yamls)
       end
       success 'Secrets applicated successfully'
     end
@@ -258,7 +259,7 @@ module Hippo
           @recipe.kubernetes.delete_job(@stage, job['metadata']['name'])
         end
 
-        result = @recipe.kubernetes.apply_with_kubectl(objects)
+        result = @recipe.kubernetes.apply_with_kubectl(@stage, objects)
       end
 
       puts 'Waiting for all scheduled jobs to finish...'

@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   if $PROGRAM_NAME =~ /gem\z/
     s.signing_key = File.expand_path('~/.gem/signing-key.pem')
   end
+  s.add_dependency 'encryptor', '>= 3.0', '< 4.0'
   s.add_dependency 'git', '>= 1.5.0', '< 2.0'
   s.add_dependency 'liquid', '>= 4.0.3', '< 5.0'
   s.add_dependency 'swamp-cli', '>= 1.0', '< 2.0'

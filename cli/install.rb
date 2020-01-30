@@ -7,38 +7,37 @@ command :install do
     options[:hippofile] = value.to_s
   end
 
-  option '--no-build', 'Do not build the images' do |_value, options|
-    options[:build] = false
-  end
-
   option '--no-deploy', 'Do not deploy after install' do |_value, options|
     options[:deploy] = false
   end
 
+  option '--no-jobs', 'Do not run the deploy jobs' do |_value, options|
+    options[:jobs] = false
+  end
+
   action do |context|
-    require 'hippo/cli_steps'
-    steps = Hippo::CLISteps.setup(context)
-    if context.options[:build] == false
-      commit = steps.recipe.repository.commit_for_branch(steps.stage.branch)
-      puts 'Not building an image and just hoping one exists for current commit.'
-      steps.prepare_repository(fetch: false)
-    else
-      steps.prepare_repository
-      steps.build
-      steps.publish
+    require 'hippo/cli'
+    cli = Hippo::CLI.setup(context)
+    cli.verify_image_existence
+
+    cli.apply_namespace
+    cli.apply_config
+
+    unless context.options[:jobs] == false
+      if cli.run_install_jobs == false
+        raise Hippo::Error, 'Not all jobs completed successfully. Cannot continue with installation.'
+      end
     end
 
-    steps.apply_namespace
-    steps.apply_config
-    steps.apply_secrets
-
-    if steps.run_install_jobs == false
-      raise Hippo::Error, 'Not all installation jobs completed successfully. Cannot continue to deploy.'
+    if options[:deploy] == false
+      puts 'Not deploying because --no-deploy was specified'
+      exit 0
     end
 
-    unless context.options[:deploy] == false
-      steps.apply_services
-      steps.deploy
+    unless cli.deploy
+      puts 'Deployment did not complete successfully. Not continuing any further.'
+      exit 2
     end
+    cli.apply_services
   end
 end

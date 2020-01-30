@@ -8,8 +8,8 @@ command :'apply-services' do
   end
 
   action do |context|
-    require 'hippo/cli_steps'
-    steps = Hippo::CLISteps.setup(context)
-    steps.apply_services
+    require 'hippo/cli'
+    cli = Hippo::CLI.setup(context)
+    cli.apply_services
   end
 end

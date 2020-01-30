@@ -8,10 +8,9 @@ command :'apply-config' do
   end
 
   action do |context|
-    require 'hippo/cli_steps'
-    steps = Hippo::CLISteps.setup(context)
-    steps.apply_namespace
-    steps.apply_config
-    steps.apply_secrets
+    require 'hippo/cli'
+    cli = Hippo::CLI.setup(context)
+    cli.apply_namespace
+    cli.apply_config
   end
 end

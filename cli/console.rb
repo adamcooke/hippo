@@ -16,16 +16,16 @@ command :console do
   end
 
   action do |context|
-    require 'hippo/cli_steps'
-    cli = Hippo::CLISteps.setup(context)
+    require 'hippo/cli'
+    cli = Hippo::CLI.setup(context)
 
-    if cli.recipe.console.nil?
+    if cli.manifest.console.nil?
       raise Error, 'No console configuration has been provided in Hippofile'
     end
 
     time = Time.now.to_i
-    deployment_name = context.options[:deployment] || cli.recipe.console['deployment']
-    command = context.options[:command] || cli.recipe.console['command'] || 'bash'
-    exec cli.stage.kubectl("exec -it deployment/#{deployment_name} -- #{command}")
+    deployment_name = context.options[:deployment] || cli.manifest.console['deployment']
+    command = context.options[:command] || cli.manifest.console['command'] || 'bash'
+    exec cli.stage.kubectl("exec -it deployment/#{deployment_name} -- #{command}").join(' ')
   end
 end

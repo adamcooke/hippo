@@ -25,12 +25,11 @@ module Hippo
     def verify_image_existence
       missing = 0
       @manifest.images.each do |_, image|
-        commit = image.commit_ref_for_branch(@stage.branch)
-        if image.exists_for_commit?(commit)
-          puts "Image for #{image.name} exists for #{image.url} (with tag #{commit})"
+        if image.exists_for_stage?(@stage)
+          puts "Image for #{image.name} exists for #{image.url} (with tag #{image.image_tag_for_stage(@stage)})"
         else
           missing += 1
-          puts "No #{image.name} image at #{image.url} (with tag #{commit})"
+          puts "No #{image.name} image at #{image.url} (with tag #{image.image_tag_for_stage(@stage)})"
         end
       end
 
@@ -96,7 +95,7 @@ module Hippo
       deployment_id = SecureRandom.hex(6)
       deployments = @stage.deployments
       if deployments.empty?
-        puts 'There are no deployment objects defined.'
+        puts 'There are no deployment objects defined'
         return true
       end
 

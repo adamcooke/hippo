@@ -29,7 +29,7 @@ command :install do
       end
     end
 
-    if options[:deploy] == false
+    if context.options[:deploy] == false
       puts 'Not deploying because --no-deploy was specified'
       exit 0
     end

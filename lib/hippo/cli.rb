@@ -141,8 +141,12 @@ module Hippo
     private
 
     def apply(objects, type)
-      puts "Applying #{objects.size} #{type} #{objects.size == 1 ? 'object' : 'objects'}"
-      @stage.apply(objects)
+      if objects.empty?
+        puts "No #{type} objects found to apply"
+      else
+        puts "Applying #{objects.size} #{type} #{objects.size == 1 ? 'object' : 'objects'}"
+        @stage.apply(objects)
+      end
     end
 
     def run_jobs(type)

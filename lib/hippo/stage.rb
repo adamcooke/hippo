@@ -3,6 +3,7 @@
 require 'liquid'
 require 'open3'
 require 'hippo/secret_manager'
+require 'hippo/package'
 
 module Hippo
   class Stage
@@ -21,6 +22,10 @@ module Hippo
       @options['branch']
     end
 
+    def image_tag
+      @options['image_tag']
+    end
+
     def namespace
       @options['namespace']
     end
@@ -34,31 +39,41 @@ module Hippo
     end
 
     # These are the vars to represent this
-    def template_vars
-      {
+    def template_vars(include_packages: true)
+      hash = {
         'name' => name,
         'branch' => branch,
         'namespace' => namespace,
         'context' => context,
-        'images' => @manifest.images.values.each_with_object({}) { |image, hash| hash[image.name] = image.image_path_for_branch(branch) },
+        'images' => @manifest.images.values.each_with_object({}) { |image, hash| hash[image.name] = image.image_path_for_stage(self) },
         'vars' => vars
       }
+
+      if secret_manager.key_available?
+        hash['secrets'] = secret_manager.secrets.each_with_object({}) { |secret, hash| hash[secret.name] = secret.template_vars }
+      end
+
+      if include_packages
+        hash['packages'] = packages.values.each_with_object({}) { |pkg, hash| hash[pkg.name] = pkg.template_vars }
+      end
+
+      hash
     end
 
     # Return a new decorator object that can be passed to objects that
     # would like to decorator things.
-    def decorator
+    def decorator(include_packages_vars: true)
       proc do |data|
         template = Liquid::Template.parse(data)
         template.render(
-          'stage' => template_vars,
+          'stage' => template_vars(include_packages: include_packages_vars),
           'manifest' => @manifest.template_vars
         )
       end
     end
 
-    def objects(path)
-      @manifest.objects(path, decorator: decorator)
+    def objects(path, include_packages_vars: true)
+      @manifest.objects(path, decorator: decorator(include_packages_vars: include_packages_vars))
     end
 
     def secret_manager
@@ -91,6 +106,23 @@ module Hippo
     # @return [Hash<String,Hippo::ObjectDefinition>]
     def jobs(type)
       Util.create_object_definitions(objects("jobs/#{type}"), self)
+    end
+
+    # Return a hash of all packages available in the stage
+    #
+    # @return [Hash<String, Hippo::Package>]
+    def packages
+      @packages ||= objects('packages', include_packages_vars: false).values.each_with_object({}) do |package_hash, hash|
+        package = Package.new(package_hash.first, self)
+        hash[package.name] = package
+      end
+    end
+
+    # Return any package values that have been defined
+    #
+    # @return [Hash]
+    def overridden_package_values
+      @options['packages'] || {}
     end
 
     # Return a kubectl command ready for use within this stage's
@@ -144,13 +176,12 @@ module Hippo
     # @return [Array<Hippo::ObjectDefinition>]
     def get(*names)
       command = kubectl('get', '-o', 'yaml', *names)
-      Open3.popen3(*command) do |_, stdout, stderr, wt|
-        raise Error, "[kutectl] #{stderr.read}" unless wt.value.success?
+      stdout, stderr, status = Open3.capture3(*command)
+      raise Error, "[kubectl] #{stderr}" unless status.success?
 
-        yaml = YAML.safe_load(stdout.read, permitted_classes: [Time])
-        yaml = yaml['items'] || [yaml]
-        yaml.map { |y| ObjectDefinition.new(y, self, clean: true) }
-      end
+      yaml = YAML.safe_load(stdout, permitted_classes: [Time])
+      yaml = yaml['items'] || [yaml]
+      yaml.map { |y| ObjectDefinition.new(y, self, clean: true) }
     end
 
     # Delete an object from the kubernetes API

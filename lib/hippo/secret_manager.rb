@@ -71,7 +71,7 @@ module Hippo
                                   'metadata' => { 'name' => 'hippo-secret-key' },
                                   'data' => { 'key' => Base64.encode64(secret_key64).gsub("\n", '').strip }
                                 }, @stage)
-      @stage.apply(od)
+      @stage.apply([od])
       @key = secret_key
     end
 

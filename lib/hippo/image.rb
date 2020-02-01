@@ -28,6 +28,8 @@ module Hippo
     end
 
     def commit_ref_for_branch(branch)
+      return nil if remote_refs.nil?
+
       remote_refs.dig('branches', branch, :sha)
     end
 
@@ -35,7 +37,21 @@ module Hippo
       "#{url}:#{commit_ref_for_branch(branch)}"
     end
 
+    def image_path_for_stage(stage)
+      if repository && stage.branch
+        image_path_for_branch(stage.branch)
+      elsif repository && stage.branch.nil?
+        image_path_for_branch('master')
+      elsif repository.nil? && stage.image_tag
+        "#{url}:#{stage.image_tag}"
+      else
+        "#{url}:latest"
+      end
+    end
+
     def remote_refs
+      return nil if repository.nil?
+
       @remote_refs ||= begin
         Git.ls_remote(repository)
       end

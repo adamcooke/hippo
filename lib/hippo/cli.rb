@@ -67,6 +67,28 @@ module Hippo
       end
     end
 
+    # Install all packages
+    #
+    # @return [void]
+    def install_all_packages
+      if @stage.packages.empty?
+        puts 'There are no packages to install'
+        return
+      end
+
+      @stage.packages.values.each do |package|
+        if package.installed?
+          puts "#{package.name} is already installed. Upgrading..."
+          package.upgrade
+        else
+          puts "Installing #{package.name} using Helm..."
+          package.install
+        end
+      end
+
+      puts "Finished with #{@stage.packages.size} #{@stage.package.size == 1 ? 'package' : 'packages'}"
+    end
+
     # Apply all services, ingresses and policies
     #
     # @return [void]

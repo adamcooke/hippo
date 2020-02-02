@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-command :'secrets:key' do
+command :'secret:key' do
   desc 'Display/generate details about the secret encryption key'
 
   option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|

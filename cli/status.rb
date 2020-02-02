@@ -7,11 +7,18 @@ command :status do
     options[:hippofile] = value.to_s
   end
 
+  option '--full', 'Include all relevant objects in namespace' do |_value, options|
+    options[:full] = true
+  end
+
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
 
-    command = cli.stage.kubectl('get', 'pods,svc,ingress,deployments,statefulset,cm,secret,pvc')
+    objects = %w[pods svc ingress deployments statefulset]
+    objects += %w[secret cm pvc networkpolicy] if context.options[:full]
+
+    command = cli.stage.kubectl('get', objects.join(','))
     exec *command
   end
 end

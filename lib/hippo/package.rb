@@ -53,7 +53,7 @@ module Hippo
     #
     # @return [void]
     def upgrade
-      run_install_command('upgrade', '--history-max', '5')
+      run_install_command('upgrade', '--history-max', @options['max-revisions'] ? @options['max-revisions'].to_i.to_s : '5')
     end
 
     # Uninstall this packgae
@@ -76,25 +76,6 @@ module Hippo
     # @return [String]
     def notes
       run(helm('get', 'notes', name))
-    end
-
-    # Return an array of variables which should be exported
-    # to the templating engine.
-    #
-    # @return [Hash]
-    def template_vars
-      return {} unless @options['vars'].is_a?(Hash)
-
-      @options['vars'].each_with_object({}) do |(key, value), hash|
-        if value.is_a?(Hash) && fs = value['fromSecret']
-          secret = @stage.get('secret', fs['secretName']).first || {}
-          secret = secret.dig('data', fs['key'])
-          secret = Base64.decode64(secret) if secret
-          hash[key] = secret
-        else
-          hash[key] = value.to_s
-        end
-      end
     end
 
     private

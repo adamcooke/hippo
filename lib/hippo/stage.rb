@@ -39,7 +39,7 @@ module Hippo
     end
 
     # These are the vars to represent this
-    def template_vars(include_packages: true)
+    def template_vars
       @template_vars ||= begin
         hash = {
           'name' => name,
@@ -54,28 +54,24 @@ module Hippo
           hash['secrets'] = secret_manager.secrets.each_with_object({}) { |secret, hash| hash[secret.name] = secret.template_vars }
         end
 
-        if include_packages
-          hash['packages'] = packages.values.each_with_object({}) { |pkg, hash| hash[pkg.name] = pkg.template_vars }
-        end
-
         hash
       end
     end
 
     # Return a new decorator object that can be passed to objects that
     # would like to decorator things.
-    def decorator(include_packages_vars: true)
+    def decorator
       proc do |data|
         template = Liquid::Template.parse(data)
         template.render(
-          'stage' => template_vars(include_packages: include_packages_vars),
+          'stage' => template_vars,
           'manifest' => @manifest.template_vars
         )
       end
     end
 
-    def objects(path, include_packages_vars: true)
-      @manifest.objects(path, decorator: decorator(include_packages_vars: include_packages_vars))
+    def objects(path)
+      @manifest.objects(path, decorator: decorator)
     end
 
     def secret_manager
@@ -115,7 +111,7 @@ module Hippo
     #
     # @return [Hash<String, Hippo::Package>]
     def packages
-      @packages ||= objects('packages', include_packages_vars: false).values.each_with_object({}) do |package_hash, hash|
+      @packages ||= objects('packages').values.each_with_object({}) do |package_hash, hash|
         package = Package.new(package_hash.first, self)
         hash[package.name] = package
       end

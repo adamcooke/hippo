@@ -86,7 +86,7 @@ module Hippo
         end
       end
 
-      puts "Finished with #{@stage.packages.size} #{@stage.package.size == 1 ? 'package' : 'packages'}"
+      puts "Finished with #{@stage.packages.size} #{@stage.packages.size == 1 ? 'package' : 'packages'}"
     end
 
     # Apply all services, ingresses and policies

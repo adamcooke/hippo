@@ -53,7 +53,7 @@ module Hippo
     #
     # @return [void]
     def upgrade
-      run_install_command('upgrade')
+      run_install_command('upgrade', '--history-max', '5')
     end
 
     # Uninstall this packgae
@@ -107,12 +107,12 @@ module Hippo
       command
     end
 
-    def install_command(verb = 'install')
-      helm(verb, name, package, '-f', '-')
+    def install_command(verb, *additional)
+      helm(verb, name, package, '-f', '-', *additional)
     end
 
-    def run_install_command(verb)
-      run(install_command(verb), stdin: final_values.to_yaml)
+    def run_install_command(verb, *additional)
+      run(install_command(verb, *additional), stdin: final_values.to_yaml)
       true
     end
 

@@ -40,24 +40,26 @@ module Hippo
 
     # These are the vars to represent this
     def template_vars(include_packages: true)
-      hash = {
-        'name' => name,
-        'branch' => branch,
-        'namespace' => namespace,
-        'context' => context,
-        'images' => @manifest.images.values.each_with_object({}) { |image, hash| hash[image.name] = image.image_path_for_stage(self) },
-        'vars' => vars
-      }
+      @template_vars ||= begin
+        hash = {
+          'name' => name,
+          'branch' => branch,
+          'namespace' => namespace,
+          'context' => context,
+          'images' => @manifest.images.values.each_with_object({}) { |image, hash| hash[image.name] = image.image_path_for_stage(self) },
+          'vars' => vars
+        }
 
-      if secret_manager.key_available?
-        hash['secrets'] = secret_manager.secrets.each_with_object({}) { |secret, hash| hash[secret.name] = secret.template_vars }
+        if secret_manager.key_available?
+          hash['secrets'] = secret_manager.secrets.each_with_object({}) { |secret, hash| hash[secret.name] = secret.template_vars }
+        end
+
+        if include_packages
+          hash['packages'] = packages.values.each_with_object({}) { |pkg, hash| hash[pkg.name] = pkg.template_vars }
+        end
+
+        hash
       end
-
-      if include_packages
-        hash['packages'] = packages.values.each_with_object({}) { |pkg, hash| hash[pkg.name] = pkg.template_vars }
-      end
-
-      hash
     end
 
     # Return a new decorator object that can be passed to objects that
@@ -84,28 +86,29 @@ module Hippo
     #
     # @return [Hash<String,Hippo::ObjectDefinition>]
     def deployments
-      Util.create_object_definitions(objects('deployments'), self, required_kinds: ['Deployment'])
+      @deployments ||= Util.create_object_definitions(objects('deployments'), self, required_kinds: ['Deployment'])
     end
 
     # Return an array of all services/ingresses for this stage
     #
     # @return [Hash<String,Hippo::ObjectDefinition>]
     def services
-      Util.create_object_definitions(objects('services'), self, required_kinds: %w[Service Ingress NetworkPolicy])
+      @services ||= Util.create_object_definitions(objects('services'), self, required_kinds: %w[Service Ingress NetworkPolicy])
     end
 
     # Return an array of all configuration objects
     #
     # @return [Hash<String,Hippo::ObjectDefinition>]
     def configs
-      Util.create_object_definitions(objects('config'), self)
+      @configs ||= Util.create_object_definitions(objects('config'), self)
     end
 
     # Return an array of all job objects
     #
     # @return [Hash<String,Hippo::ObjectDefinition>]
     def jobs(type)
-      Util.create_object_definitions(objects("jobs/#{type}"), self)
+      @jobs ||= {}
+      @jobs[type] ||= Util.create_object_definitions(objects("jobs/#{type}"), self)
     end
 
     # Return a hash of all packages available in the stage

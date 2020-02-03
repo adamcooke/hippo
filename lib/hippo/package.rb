@@ -78,8 +78,6 @@ module Hippo
       run(helm('get', 'notes', name))
     end
 
-    private
-
     def helm(*commands)
       command = ['helm']
       command += ['--kube-context', @stage.context] if @stage.context
@@ -87,6 +85,8 @@ module Hippo
       command += commands
       command
     end
+
+    private
 
     def install_command(verb, *additional)
       helm(verb, name, package, '-f', '-', *additional)

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-command :'create-stage' do
+command :create do
   desc 'Create a new stage'
 
   option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
@@ -23,11 +23,11 @@ command :'create-stage' do
     require 'hippo/manifest'
     manifest = Hippo::Manifest.load_from_file(context.options[:hippofile] || './Hippofile')
 
-    stage_name = context.args[0]
+    stage_name = CURRENT_STAGE
     stage_path = File.join(manifest.root, 'stages', "#{stage_name}.yaml")
 
     if !context.options[:force] && File.file?(stage_path)
-      puts "\e[31mA stage named '#{stage_name}' already exists.\e[0m"
+      puts "\e[31mA stage named '#{stage_name}' already exists. Use --force to overwrite configuration.\e[0m"
       exit 1
     end
 

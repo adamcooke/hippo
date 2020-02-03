@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 command :'package:uninstall' do
-  desc 'Uninstall a named helm package'
+  desc 'Uninstall a package'
 
   option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
     options[:hippofile] = value.to_s
   end
 
-  option '-p', '--package [NAME]', 'The name of the package to install' do |value, options|
+  option '-p', '--package [NAME]', 'The name of the package' do |value, options|
     options[:package] = value
   end
 

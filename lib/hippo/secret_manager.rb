@@ -3,7 +3,6 @@
 require 'encryptor'
 require 'openssl'
 require 'base64'
-require 'hippo/secret'
 
 module Hippo
   class SecretManager
@@ -69,7 +68,7 @@ module Hippo
                                   'kind' => 'Secret',
                                   'type' => 'hippo.adam.ac/secret-encryption-key',
                                   'metadata' => { 'name' => 'hippo-secret-key' },
-                                  'data' => { 'key' => Base64.encode64(secret_key64).gsub("\n", '').strip }
+                                  'data' => { 'key' => secret_key64 }
                                 }, @stage)
       @stage.apply([od])
       @key = secret_key

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-command :'secret:key' do
+command :key do
   desc 'Display/generate details about the secret encryption key'
 
   option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
@@ -24,7 +24,7 @@ command :'secret:key' do
         puts 'Secret encryption key has not been generated yet.'
         puts 'Generate a new using:'
         puts
-        puts "     hippo #{cli.stage.name} secrets:key --generate"
+        puts "     hippo #{cli.stage.name} key --generate"
         puts
       end
     end

@@ -36,6 +36,14 @@ module Hippo
       @options['console']
     end
 
+    def config
+      @options['config'] || {}
+    end
+
+    def bootstrap
+      @options['bootstrap'] || {}
+    end
+
     def template_vars
       {
         'name' => name,

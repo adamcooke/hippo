@@ -11,31 +11,31 @@ command :objects do
     options[:type] = value
   end
 
+  option '--to-apply', 'Show objects as they would be applied to Kubernetes' do |_value, options|
+    options[:to_apply] = true
+  end
+
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
 
+    method = if context.options[:to_apply]
+               :yaml_to_apply
+             else
+               :yaml
+             end
+
     groups = []
     if context.options[:type].nil? || context.options[:type] == 'config'
-      groups << cli.stage.configs.map(&:yaml)
-
-      if cli.stage.secret_manager.key_available?
-        groups << cli.stage.secret_manager.secrets.map(&:applyable_yaml).flatten.map do |object|
-          object['data'].each do |key, value|
-            object['data'][key] = Base64.decode64(value)
-          end
-          object.yaml
-        end
-
-      end
+      groups << cli.stage.configs.map(&method)
     end
 
     if context.options[:type].nil? || context.options[:type] == 'deployments'
-      groups << cli.stage.deployments.map(&:yaml)
+      groups << cli.stage.deployments.map(&method)
     end
 
     if context.options[:type].nil? || context.options[:type] == 'services'
-      groups << cli.stage.services.map(&:yaml)
+      groups << cli.stage.services.map(&method)
     end
 
     groups.each do |group|

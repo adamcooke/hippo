@@ -23,7 +23,7 @@ module Hippo
     end
 
     def image_tag
-      @options['image_tag']
+      @options['image-tag']
     end
 
     def namespace
@@ -34,27 +34,24 @@ module Hippo
       @options['context']
     end
 
-    def vars
-      @options['vars']
+    def config
+      @options['config']
     end
 
     # These are the vars to represent this
     def template_vars
       @template_vars ||= begin
-        hash = {
-          'name' => name,
+        {
+          'manifest' => @manifest.template_vars,
+          'stage-name' => name,
           'branch' => branch,
+          'image-tag' => image_tag,
           'namespace' => namespace,
           'context' => context,
           'images' => @manifest.images.values.each_with_object({}) { |image, hash| hash[image.name] = image.image_path_for_stage(self) },
-          'vars' => vars
+          'config' => @manifest.config.deep_merge(config),
+          'secrets' => secret_manager.all
         }
-
-        if secret_manager.key_available?
-          hash['secrets'] = secret_manager.secrets.each_with_object({}) { |secret, hash| hash[secret.name] = secret.template_vars }
-        end
-
-        hash
       end
     end
 
@@ -62,11 +59,12 @@ module Hippo
     # would like to decorator things.
     def decorator
       proc do |data|
-        template = Liquid::Template.parse(data)
-        template.render(
-          'stage' => template_vars,
-          'manifest' => @manifest.template_vars
-        )
+        begin
+          template = Liquid::Template.parse(data)
+          template.render(template_vars)
+        rescue Liquid::SyntaxError => e
+          raise Error, "Template error: #{e.message}"
+        end
       end
     end
 
@@ -140,7 +138,7 @@ module Hippo
     # @param objects [Array<Hippo::ObjectDefinition>]
     # @return [Hash]
     def apply(objects)
-      yaml_to_apply = objects.map(&:yaml).join("\n")
+      yaml_to_apply = objects.map(&:yaml_to_apply).join("\n")
 
       command = ['kubectl']
       command += ['--context', context] if context

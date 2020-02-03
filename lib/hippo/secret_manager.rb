@@ -15,8 +15,8 @@ module Hippo
 
     CIPHER = OpenSSL::Cipher.new('aes-256-gcm')
 
-    def root
-      File.join(@stage.manifest.root, 'secrets', @stage.name)
+    def path
+      File.join(@stage.manifest.root, 'secrets', @stage.name + '.yaml')
     end
 
     def secret(name)
@@ -85,11 +85,11 @@ module Hippo
       iv = CIPHER.random_iv
       salt = SecureRandom.random_bytes(16)
       encrypted_value = Encryptor.encrypt(value: value.to_s, key: @key, iv: iv, salt: salt)
-      'encrypted:' + Base64.encode64([
+      Base64.encode64([
         Base64.encode64(encrypted_value),
         Base64.encode64(salt),
         Base64.encode64(iv)
-      ].join('---')).gsub("\n", '')
+      ].join('---'))
     end
 
     # Decrypt the given value value and return it
@@ -97,14 +97,59 @@ module Hippo
     # @param value [String]
     # @return [String]
     def decrypt(value)
-      value = value.to_s
-      if value =~ /\Aencrypted:(.*)/
-        value = Base64.decode64(Regexp.last_match(1))
-        encrypted_value, salt, iv = value.split('---', 3).map { |s| Base64.decode64(s) }
-        Encryptor.decrypt(value: encrypted_value, key: @key, iv: iv, salt: salt).to_s
-      else
-        value
+      value = Base64.decode64(value.to_s)
+      encrypted_value, salt, iv = value.split('---', 3).map { |s| Base64.decode64(s) }
+      Encryptor.decrypt(value: encrypted_value, key: @key, iv: iv, salt: salt).to_s
+    end
+
+    # Does a secrets file exist for this application.
+    #
+    # @return [Boolean]
+    def exists?
+      File.file?(path)
+    end
+
+    # Create an empty encrypted example secret file
+    #
+    # @return [void]
+    def create
+      unless key_available?
+        raise Error, 'Cannot create secret file because no key is available for encryption'
       end
+
+      return if exists?
+
+      yaml = { 'example' => 'This is an example secret!' }.to_yaml
+      FileUtils.mkdir_p(File.dirname(path))
+      File.open(path, 'w') { |f| f.write(encrypt(yaml)) }
+    end
+
+    def edit
+      create unless exists?
+
+      unless key_available?
+        raise Error, 'Cannot create edit file because no key is available for decryption'
+      end
+
+      contents = decrypt(File.read(path))
+      contents = Util.open_in_editor('secret', contents)
+      write_file(contents)
+    end
+
+    def write_file(contents)
+      FileUtils.mkdir_p(File.dirname(path))
+      File.open(path, 'w') { |f| f.write(encrypt(contents)) }
+    end
+
+    def all
+      @all ||= begin
+        return {} unless exists?
+        return {} unless key_available?
+
+        YAML.safe_load(decrypt(File.read(path)))
+      end
+    rescue Psych::SyntaxError => e
+      raise Error, "Could not parse secrets file: #{e.message}"
     end
   end
 end

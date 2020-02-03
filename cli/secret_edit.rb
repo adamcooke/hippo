@@ -3,12 +3,13 @@
 command :'secret:edit' do
   desc 'Create/edit an encrypted secrets file'
 
+  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
+    options[:hippofile] = value.to_s
+  end
+
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
-
-    secret_name = context.args[0]
-    raise Hippo::Error, 'You must provide a secret name' if secret_name.nil?
 
     manager = cli.stage.secret_manager
     unless manager.key_available?
@@ -17,18 +18,6 @@ command :'secret:edit' do
       exit 2
     end
 
-    secret = manager.secret(secret_name)
-    if secret.exists?
-      secret.edit
-    else
-      puts "No secret exists at #{secret.path}. Would you like to create one?"
-      response = STDIN.gets.strip.downcase.strip
-      if %w[y yes please].include?(response)
-        secret.create
-        secret.edit
-      else
-        puts 'Not a problem. You can make it later.'
-      end
-    end
+    manager.edit
   end
 end

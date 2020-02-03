@@ -8,18 +8,18 @@ require 'hippo/error'
 require 'hippo/version'
 require 'swamp/cli'
 
-COMMANDS_WITHOUT_STAGE = %w[help init].freeze
+COMMANDS_WITHOUT_STAGE = %w[help init create-stage].freeze
 
 begin
   cli = Swamp::CLI.new(:hippo, version: Hippo::VERSION)
   cli.load_from_directory(File.expand_path('../cli', __dir__))
 
   args = ARGV.dup
-  stage = args.shift
-  command = args.shift
+  stage = args[0]
+  command = args[1]
 
   if COMMANDS_WITHOUT_STAGE.include?(stage) || (command.nil? && stage.nil?)
-    cli.dispatch([stage || 'help'])
+    cli.dispatch(args.empty? ? ['help'] : args)
   elsif command.nil?
     puts 'usage: hippo [STAGE] [COMMAND] {options}'
     puts '(Be sure to specify the stage name before the command)'

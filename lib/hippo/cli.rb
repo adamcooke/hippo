@@ -58,13 +58,6 @@ module Hippo
     # @return [void]
     def apply_config
       apply(@stage.configs, 'configuration')
-
-      if @stage.secret_manager.key_available?
-        secrets = @stage.secret_manager.secrets.map(&:applyable_yaml).flatten
-        apply(secrets, 'secret')
-      else
-        puts 'Not applying secrets because no key is available to decrypt them.'
-      end
     end
 
     # Install all packages

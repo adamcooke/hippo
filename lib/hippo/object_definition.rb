@@ -7,11 +7,6 @@ module Hippo
     def initialize(object, stage, clean: false)
       @object = object
       @stage = stage
-
-      unless clean
-        insert_namespace!
-        insert_default_labels!
-      end
     end
 
     def [](name)
@@ -36,6 +31,24 @@ module Hippo
 
     def yaml
       @object.to_yaml
+    end
+
+    def yaml_to_apply
+      object = ObjectDefinition.new(@object.dup, @stage)
+      object.insert_namespace!
+      object.insert_default_labels!
+      object.base64_encode_data! if kind == 'Secret'
+      object.yaml
+    end
+
+    def base64_encode_data!(object = @object['data'])
+      object.each do |key, value|
+        object[key] = if value.is_a?(Hash)
+                        base64_encode_data!(value)
+                      else
+                        Base64.encode64(value.to_s).gsub(/\n/, '')
+                      end
+      end
     end
 
     def insert_namespace!

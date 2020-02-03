@@ -13,7 +13,7 @@ command :init do
     end
 
     root = File.expand_path(path)
-    template_root = File.join(File.expand_path('../', __dir__), 'template')
+    template_root = File.join(Hippo.root, 'template')
 
     raise Hippo::Error, "File already exists at #{root}" if File.exist?(root)
 

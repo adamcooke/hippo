@@ -11,10 +11,7 @@ command :vars do
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
 
-    hash = {
-      'stage' => cli.stage.template_vars,
-      'manifest' => cli.manifest.template_vars
-    }.to_yaml.gsub(/^(\s*[\w\-]+)\:(.*)/) do
+    hash = cli.stage.template_vars.to_yaml.gsub(/^(\s*[\w\-]+)\:(.*)/) do
       "\e[32m#{Regexp.last_match(1)}:\e[0m" + Regexp.last_match(2)
     end
     puts hash

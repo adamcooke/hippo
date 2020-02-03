@@ -46,7 +46,7 @@ module Hippo
         object[key] = if value.is_a?(Hash)
                         base64_encode_data!(value)
                       else
-                        Base64.encode64(value.to_s).gsub(/\n/, '')
+                        Base64.encode64(value.to_s).gsub(/\n/, '').strip
                       end
       end
     end

@@ -37,9 +37,12 @@ command :create do
     yaml = {}
     yaml['name'] = stage_name
     yaml['namespace'] = namespace
-    yaml['branch'] = manifest.bootstrap.dig('defaults', 'branch') || 'master'
+    yaml['context'] = context if context
+
     if tag = manifest.bootstrap.dig('defaults', 'image-tag')
       yaml['image-tag'] = tag
+    else
+      yaml['branch'] = manifest.bootstrap.dig('defaults', 'branch') || 'master'
     end
 
     require 'hippo/bootstrap_parser'

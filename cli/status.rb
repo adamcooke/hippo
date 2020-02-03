@@ -15,7 +15,7 @@ command :status do
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
 
-    objects = %w[pods svc ingress deployments statefulset]
+    objects = %w[pods svc ingress deployments jobs statefulset]
     objects += %w[secret cm pvc networkpolicy] if context.options[:full]
 
     command = cli.stage.kubectl('get', objects.join(','))

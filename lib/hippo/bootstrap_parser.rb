@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'securerandom'
 require 'secure_random_string'
 
 module Hippo
@@ -11,7 +12,7 @@ module Hippo
     TYPES = %w[placeholder password].freeze
 
     def initialize(source)
-      @source = source
+      @source = source || {}
     end
 
     def parse
@@ -36,9 +37,23 @@ module Hippo
     def parse_generator(value)
       case value['type']
       when 'password'
-        SecureRandomString.new(value['length'] || 24).to_s
+        password = SecureRandomString.new(value['length'] || 24).to_s
+        if value['addHashes']
+          {
+            'plain' => password,
+            'sha1' => Digest::SHA1.hexdigest(password),
+            'sha2' => Digest::SHA2.hexdigest(password),
+            'sha256' => Digest::SHA256.hexdigest(password)
+          }
+        else
+          password
+        end
       when 'placeholder'
         value['prefix'].to_s + 'xxx' + value['suffix'].to_s
+      when 'hex'
+        SecureRandom.hex(value['size'] ? value['size'].to_i : 16)
+      when 'random'
+        Base64.encode64(SecureRandom.random_bytes(value['size'] ? value['size'].to_i : 16)).strip
       when nil
         raise Error, "A 'type' must be provided for each generated item"
       else

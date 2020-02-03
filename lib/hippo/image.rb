@@ -57,7 +57,13 @@ module Hippo
       end
     end
 
+    def can_check_for_existence?
+      @options['existenceCheck'].nil? || @options['existenceCheck'] == true
+    end
+
     def exists_for_stage?(stage)
+      return true unless can_check_for_existence?
+
       credentials = Hippo.config.dig('docker', 'credentials', registry_host)
 
       tag = image_tag_for_stage(stage)
@@ -69,6 +75,7 @@ module Hippo
         request.basic_auth(credentials['username'], credentials['password'])
       end
       response = http.request(request)
+
       case response
       when Net::HTTPOK
         true

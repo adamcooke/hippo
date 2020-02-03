@@ -41,7 +41,14 @@ module Hippo
     end
 
     def bootstrap
-      @options['bootstrap'] || {}
+      @bootstrap ||= begin
+        bootstrap_file = File.join(@root, 'bootstrap.yaml')
+        if File.file?(bootstrap_file)
+          YAML.load_file(bootstrap_file)
+        else
+          {}
+        end
+      end
     end
 
     def template_vars

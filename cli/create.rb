@@ -31,13 +31,22 @@ command :create do
       exit 1
     end
 
-    namespace = context.options[:namespace] || "#{manifest.name}-#{stage_name}"
-    context = context.options[:context] || nil
+    require 'hippo/util'
+
+    namespace = context.options[:namespace]
+    if namespace.nil?
+      namespace = Hippo::Util.ask('Enter a namespace for this stage', default: "#{manifest.name}-#{stage_name}")
+    end
+
+    context_name = context.options[:context]
+    if context_name.nil?
+      context_name = Hippo::Util.ask('Enter a kubectl context for this stage', default: Hippo.current_kubectl_context)
+    end
 
     yaml = {}
     yaml['name'] = stage_name
     yaml['namespace'] = namespace
-    yaml['context'] = context if context
+    yaml['context'] = context_name
 
     if tag = manifest.bootstrap.dig('defaults', 'image-tag')
       yaml['image-tag'] = tag

@@ -70,14 +70,20 @@ module Hippo
       end
 
       def confirm(question)
-        puts question
-        response = STDIN.gets
-        if %w[yes y].include?(response.to_s.strip.downcase)
+        response = ask(question)
+        if %w[yes y].include?(response.downcase)
           puts
           true
         else
           false
         end
+      end
+
+      def ask(question, default: nil)
+        puts "\e[35m#{question}\e[0m" + (default ? " [#{default}]" : '')
+        response = STDIN.gets
+        response = response.to_s.strip
+        response.empty? ? default : response
       end
     end
   end

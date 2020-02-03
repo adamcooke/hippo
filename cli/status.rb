@@ -14,6 +14,7 @@ command :status do
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
+    cli.preflight
 
     objects = %w[pods svc ingress deployments jobs statefulset]
     objects += %w[secret cm pvc networkpolicy] if context.options[:full]

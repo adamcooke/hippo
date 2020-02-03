@@ -38,6 +38,21 @@ module Hippo
       end
     end
 
+    # Run any checks that should be performed before running
+    # any optionation which might influence the environment
+    #
+    # @return [void]
+    def preflight
+      if @stage.context.nil?
+        puts "\e[33mStage does not specify a context. The current context specified"
+        puts "by the kubectl config will be used (#{Hippo.current_kubectl_context}).\e[0m"
+        puts
+        puts 'This is not recommended. Add a context name to your stage configuration.'
+        puts
+        exit 0 unless Util.confirm('Do you wish to continue?')
+      end
+    end
+
     # Apply the namespace configuration
     #
     # @return [void]

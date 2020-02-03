@@ -18,6 +18,7 @@ command :objects do
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
+    cli.preflight
 
     method = if context.options[:to_apply]
                :yaml_to_apply

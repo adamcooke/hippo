@@ -14,6 +14,7 @@ command :'package:install' do
   action do |context|
     require 'hippo/package'
     package, cli = Hippo::Package.setup_from_cli_context(context)
+    cli.preflight
 
     if package.installed?
       puts "#{package.name} is already installed. You probably want to use helm:upgrade instead."

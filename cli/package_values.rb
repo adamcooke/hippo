@@ -10,6 +10,7 @@ command :'package:values' do
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
+    cli.preflight
 
     cli.stage.packages.values.each do |package|
       puts "\e[33m#{'=' * 80}"

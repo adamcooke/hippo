@@ -14,6 +14,8 @@ command :deploy do
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
+    cli.preflight
+
     cli.verify_image_existence
 
     cli.apply_namespace

@@ -13,6 +13,8 @@ command :key do
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
+    cli.preflight
+
     sm = cli.stage.secret_manager
     if sm.key_available?
       puts 'Secret encryption key is stored in secret/hippo-secret-key.'

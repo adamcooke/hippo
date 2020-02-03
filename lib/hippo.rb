@@ -23,4 +23,16 @@ module Hippo
       end
     end
   end
+
+  # Return the current kubectl context
+  #
+  # @return [String]
+  def self.current_kubectl_context
+    stdout, stderr, status = Open3.capture3('kubectl config current-context')
+    unless status.success?
+      raise Error, 'Could not determine current kubectl context'
+    end
+
+    stdout.strip
+  end
 end

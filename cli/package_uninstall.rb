@@ -14,6 +14,7 @@ command :'package:uninstall' do
   action do |context|
     require 'hippo/package'
     package, cli = Hippo::Package.setup_from_cli_context(context)
+    cli.preflight
 
     if package.installed?
       puts "Uninstalling #{package.name} with Helm..."

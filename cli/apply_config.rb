@@ -10,6 +10,7 @@ command :'apply-config' do
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
+    cli.preflight
     cli.apply_namespace
     cli.apply_config
   end

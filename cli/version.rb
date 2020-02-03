@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 command :version do
-  desc 'Show all variables available for use in this stage'
+  desc 'Print current Hippo version'
   action do
     puts 'Hippo v' + Hippo::VERSION
   end

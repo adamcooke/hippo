@@ -68,6 +68,17 @@ module Hippo
           tmpfile.unlink
         end
       end
+
+      def confirm(question)
+        puts question
+        response = STDIN.gets
+        if %w[yes y].include?(response.to_s.strip.downcase)
+          puts
+          true
+        else
+          false
+        end
+      end
     end
   end
 end

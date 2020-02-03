@@ -10,6 +10,7 @@ command :'package:list' do
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
+    cli.preflight
 
     if cli.stage.packages.empty?
       puts 'There are no configured packages'

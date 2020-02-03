@@ -23,6 +23,8 @@ command :console do
       raise Error, 'No console configuration has been provided in Hippofile'
     end
 
+    cli.preflight
+
     time = Time.now.to_i
     deployment_name = context.options[:deployment] || cli.manifest.console['deployment']
     command = context.options[:command] || cli.manifest.console['command'] || 'bash'

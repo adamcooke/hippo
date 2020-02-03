@@ -14,6 +14,8 @@ command :'package:test' do
   action do |context|
     require 'hippo/package'
     package, cli = Hippo::Package.setup_from_cli_context(context)
+    cli.preflight
+
     exec(*package.helm('test', package.name, '--logs'))
   end
 end

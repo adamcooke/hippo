@@ -10,6 +10,7 @@ command :'apply-services' do
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)
+    cli.preflight
     cli.apply_services
   end
 end

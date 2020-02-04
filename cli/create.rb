@@ -48,12 +48,6 @@ command :create do
     yaml['namespace'] = namespace
     yaml['context'] = context_name
 
-    if tag = manifest.bootstrap.dig('defaults', 'image-tag')
-      yaml['image-tag'] = tag
-    else
-      yaml['branch'] = manifest.bootstrap.dig('defaults', 'branch') || 'master'
-    end
-
     require 'hippo/bootstrap_parser'
     yaml['config'] = Hippo::BootstrapParser.parse(manifest.bootstrap['config'])
 

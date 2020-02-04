@@ -20,7 +20,7 @@ command :stages do
     end
 
     manifest.stages.each do |_, stage|
-      puts " * #{stage.name}"
+      puts "- #{stage.name}"
     end
   end
 end

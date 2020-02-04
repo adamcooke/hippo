@@ -143,7 +143,10 @@ module Hippo
     def all
       @all ||= begin
         return {} unless exists?
-        return {} unless key_available?
+
+        unless key_available?
+          raise Error, 'No encryption key is available to decrypt secrets'
+        end
 
         YAML.safe_load(decrypt(File.read(path)))
       end

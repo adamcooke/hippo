@@ -79,6 +79,23 @@ module Hippo
         end
       end
 
+      def select(question, items)
+        items.each_with_index do |item, index|
+          puts "#{index + 1}) #{item}"
+        end
+        selected_item = nil
+
+        until selected_item
+          response = ask(question)
+          selected_item = items[response.to_i - 1]
+          if selected_item.nil?
+            puts "\e[31mThat is not a valid option. Try again.\e[0m"
+          end
+        end
+
+        selected_item
+      end
+
       def ask(question, default: nil)
         puts "\e[35m#{question}\e[0m" + (default ? " [#{default}]" : '')
         response = STDIN.gets

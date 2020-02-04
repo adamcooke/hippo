@@ -53,19 +53,14 @@ module Hippo
 
     def template_vars
       {
-        'name' => name,
-        'images' => images.each_with_object({}) { |(name, image), hash| hash[name.to_s] = image.template_vars }
+        'name' => name
       }
     end
 
     def images
       return {} unless @options['images'].is_a?(Hash)
 
-      @images ||= begin
-        @options['images'].each_with_object({}) do |(key, value), hash|
-          hash[key] = Image.new(key, value)
-        end
-      end
+      @options['images']
     end
 
     # Load all stages that are available in the manifest

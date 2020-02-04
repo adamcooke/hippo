@@ -2,6 +2,7 @@
 
 require 'git'
 require 'net/http'
+require 'hippo/repository_tag'
 
 module Hippo
   class Image
@@ -12,65 +13,54 @@ module Hippo
 
     attr_reader :name
 
-    def url
-      @options['url']
+    def host
+      @options['host']
     end
 
-    def repository
-      @options['repository']
+    def image_name
+      @options['name']
+    end
+
+    def tag
+      @tag ||= begin
+        if @options['tag'].is_a?(Hash) && repo = @options['tag']['fromRepository']
+          RepositoryTag.new(repo)
+        elsif @options['tag'].nil?
+          'latest'
+        else
+          @options['tag'].to_s
+        end
+      end
+    end
+
+    def image_url
+      "#{host}/#{image_name}:#{tag}"
     end
 
     def template_vars
-      {
-        'url' => url,
-        'repository' => repository
+      @template_vars ||= {
+        'host' => host,
+        'name' => image_name,
+        'tag' => tag.to_s,
+        'url' => image_url
       }
     end
 
-    def commit_ref_for_branch(branch)
-      return nil if remote_refs.nil?
-
-      remote_refs.dig('branches', branch, :sha)
-    end
-
-    def image_tag_for_stage(stage)
-      if repository && stage.branch
-        commit_ref_for_branch(stage.branch)
-      elsif repository && stage.branch.nil?
-        commit_ref_for_branch('master')
-      elsif repository.nil? && stage.image_tag
-        stage.image_tag
-      else
-        'latest'
-      end
-    end
-
-    def image_path_for_stage(stage)
-      "#{url}:#{image_tag_for_stage(stage)}"
-    end
-
-    def remote_refs
-      return nil if repository.nil?
-
-      @remote_refs ||= begin
-        Git.ls_remote(repository)
-      end
-    end
-
     def can_check_for_existence?
-      @options['existenceCheck'].nil? || @options['existenceCheck'] == true
+      @options['existenceCheck'].nil? ||
+        @options['existenceCheck'] == true
     end
 
     def exists_for_stage?(stage)
       return true unless can_check_for_existence?
 
-      credentials = Hippo.config.dig('docker', 'credentials', registry_host)
+      credentials = Hippo.config.dig('docker', 'credentials', host)
 
       tag = image_tag_for_stage(stage)
 
-      http = Net::HTTP.new(registry_host, 443)
+      http = Net::HTTP.new(host, 443)
       http.use_ssl = true
-      request = Net::HTTP::Head.new("/v2/#{registry_image_name}/manifests/#{tag}")
+      request = Net::HTTP::Head.new("/v2/#{image_name}/manifests/#{tag}")
       if credentials
         request.basic_auth(credentials['username'], credentials['password'])
       end
@@ -80,20 +70,12 @@ module Hippo
       when Net::HTTPOK
         true
       when Net::HTTPUnauthorized
-        raise Error, "Could not authenticate to #{registry_host} to verify image existence"
+        raise Error, "Could not authenticate to #{host} to verify image existence"
       when Net::HTTPNotFound
         false
       else
-        raise Error, "Got #{response.code} status when verifying imag existence with #{registry_host}"
+        raise Error, "Got #{response.code} status when verifying imag existence with #{host}"
       end
-    end
-
-    def registry_host
-      url.split('/').first
-    end
-
-    def registry_image_name
-      url.split('/', 2).last
     end
   end
 end

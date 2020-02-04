@@ -38,6 +38,12 @@ module Hippo
       @options['config']
     end
 
+    def images
+      @images ||= @manifest.images.deep_merge(@options['images'] || {}).each_with_object({}) do |(key, image), hash|
+        hash[key] = Image.new(key, image)
+      end
+    end
+
     # These are the vars to represent this
     def template_vars
       @template_vars ||= begin
@@ -48,7 +54,7 @@ module Hippo
           'image-tag' => image_tag,
           'namespace' => namespace,
           'context' => context,
-          'images' => @manifest.images.values.each_with_object({}) { |image, hash| hash[image.name] = image.image_path_for_stage(self) },
+          'images' => images.values.each_with_object({}) { |image, hash| hash[image.name] = image.template_vars },
           'config' => @manifest.config.deep_merge(config),
           'secrets' => secret_manager.all
         }

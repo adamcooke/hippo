@@ -36,6 +36,8 @@ command :logs do
         end
       end
 
+      raise Error, 'There are no pods running' if pod_names.empty?
+
       until pod
         pod_id = Hippo::Util.ask('Choose a pod to view logs').to_i
         next if pod_id.zero? || pod_id.negative?

@@ -7,8 +7,16 @@ name: myapp
 
 images:
   main:
-    repository: git@github.com:myorg/myapp
-    url: myorg/myapp
+    host: index.docker.io
+    name: myorg/myapp
+    tag: latest
+    # Alternatively, load the tag name from the current HEAD commit of a
+    # branch of a remote repository...
+    #
+    # tag:
+    #   fromRepository:
+    #     url: git@github.com:myorg/myapp
+    #     branch: master
 
 # If you wish, you can define a console command that allows you to easil
 # open a console using `hippo [stage] console`

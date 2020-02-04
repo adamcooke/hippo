@@ -1,7 +1,0 @@
-name: production
-branch: master
-namespace: myapp-production
-context: my-k8s-cluster
-vars:
-  example: Hello world!
-  hostname: myapp.mydomain.com

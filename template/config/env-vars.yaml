@@ -1,7 +1,0 @@
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: env-vars
-data:
-  RAILS_ENV: production
-  RACK_TRUSTED_PROXIES: 127.0.0.1 ::1 10.217.0.0/16

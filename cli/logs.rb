@@ -25,9 +25,23 @@ command :logs do
     pod = context.options[:pod]
     if pod.nil?
       # Get all pod names that are running
-      pods = cli.stage.get('pods')
-      pods = pods.map(&:name)
-      pod = Hippo::Util.select('Choose a pod to view logs', pods)
+      stdout, stderr, status = Open3.capture3(*cli.stage.kubectl('get', 'pods'))
+      pod_names = []
+      stdout.split("\n").each_with_index do |line, index|
+        if index.zero?
+          puts "      #{line}"
+        else
+          puts "\e[33m#{index.to_s.rjust(3)})\e[0m  #{line}"
+          pod_names << line.split(/\s+/, 2).first
+        end
+      end
+
+      until pod
+        pod_id = Hippo::Util.ask('Choose a pod to view logs').to_i
+        next if pod_id.zero? || pod_id.negative?
+
+        pod = pod_names[pod_id.to_i - 1]
+      end
     end
 
     args = []

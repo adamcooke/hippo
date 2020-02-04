@@ -24,12 +24,12 @@ module Hippo
     # @return [void]
     def verify_image_existence
       missing = 0
-      @manifest.images.each do |_, image|
-        if image.exists_for_stage?(@stage)
-          puts "Image for #{image.name} exists for #{image.url} (with tag #{image.image_tag_for_stage(@stage)})"
+      @stage.images.each do |_, image|
+        if image.exists?
+          puts "Image for #{image.name} exists at #{image.image_url}"
         else
           missing += 1
-          puts "No #{image.name} image at #{image.url} (with tag #{image.image_tag_for_stage(@stage)})"
+          puts "No #{image.name} image at #{image.image_url}"
         end
       end
 

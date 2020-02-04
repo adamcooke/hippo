@@ -51,13 +51,10 @@ module Hippo
         @options['existenceCheck'] == true
     end
 
-    def exists_for_stage?(stage)
+    def exists?
       return true unless can_check_for_existence?
 
       credentials = Hippo.config.dig('docker', 'credentials', host)
-
-      tag = image_tag_for_stage(stage)
-
       http = Net::HTTP.new(host, 443)
       http.use_ssl = true
       request = Net::HTTP::Head.new("/v2/#{image_name}/manifests/#{tag}")

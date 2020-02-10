@@ -221,7 +221,7 @@ module Hippo
                else
                  '❌'
                end
-        puts "  #{icon}  " + @stage.kubectl("logs job/#{job.name}").join(' ')
+        puts "  #{icon}  hippo #{@stage.name} kubectl -- logs job/#{job.name}"
       end
       puts
       result

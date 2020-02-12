@@ -2,6 +2,7 @@
 
 require 'securerandom'
 require 'secure_random_string'
+require 'openssl'
 
 module Hippo
   class BootstrapParser
@@ -54,6 +55,27 @@ module Hippo
         SecureRandom.hex(value['size'] ? value['size'].to_i : 16)
       when 'random'
         Base64.encode64(SecureRandom.random_bytes(value['size'] ? value['size'].to_i : 16)).strip
+      when 'rsa'
+        OpenSSL::PKey::RSA.new(value['size'] ? value['size'].to_i : 2048).to_s
+      when 'certificate'
+        key = OpenSSL::PKey::RSA.new(value['key_size'] ? value['key_size'].to_i : 2048)
+
+        cert = OpenSSL::X509::Certificate.new
+        cert.subject = cert.issuer = OpenSSL::X509::Name.new(
+          [
+            ['C', value['country'] || 'GB'],
+            ['O', value['organization'] || 'Default'],
+            ['OU', value['organization_unit'] || 'Default'],
+            ['CN', value['common_name'] || 'default']
+          ]
+        )
+        cert.not_before = Time.now
+        cert.not_after = Time.now + (60 * 60 * 24 * (value['days'] ? value['days'].to_i : 730))
+        cert.public_key = key.public_key
+        cert.serial = 0x0
+        cert.version = 2
+        cert.sign key, OpenSSL::Digest::SHA256.new
+        { 'certificate' => cert.to_s, 'key' => key.to_s }
       when nil
         raise Error, "A 'type' must be provided for each generated item"
       else

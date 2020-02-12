@@ -16,7 +16,7 @@ command :'package:values' do
       puts "\e[33m#{'=' * 80}"
       puts package.name
       puts "#{'=' * 80}\e[0m"
-      puts package.final_values.to_yaml.sub(/\A---\n/, '')
+      puts package.final_values.to_yaml(line_width: -1).sub(/\A---\n/, '')
     end
   end
 end

@@ -4,6 +4,7 @@ require 'liquid'
 require 'open3'
 require 'hippo/secret_manager'
 require 'hippo/package'
+require 'hippo/liquid_filters'
 
 module Hippo
   class Stage
@@ -67,7 +68,7 @@ module Hippo
       proc do |data|
         begin
           template = Liquid::Template.parse(data)
-          template.render(template_vars)
+          template.render(template_vars, filters: [LiquidFilters])
         rescue Liquid::SyntaxError => e
           raise Error, "Template error: #{e.message}"
         end

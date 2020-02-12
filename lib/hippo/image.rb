@@ -34,7 +34,11 @@ module Hippo
     end
 
     def image_url
-      "#{host}/#{image_name}:#{tag}"
+      if host
+        "#{host}/#{image_name}:#{tag}"
+      else
+        "#{image_name}:#{tag}"
+      end
     end
 
     def template_vars
@@ -52,6 +56,7 @@ module Hippo
     end
 
     def exists?
+      return true if host.nil?
       return true unless can_check_for_existence?
 
       credentials = Hippo.config.dig('docker', 'credentials', host)

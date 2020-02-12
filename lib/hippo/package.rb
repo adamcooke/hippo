@@ -93,7 +93,7 @@ module Hippo
     end
 
     def run_install_command(verb, *additional)
-      run(install_command(verb, *additional), stdin: final_values.to_yaml)
+      run(install_command(verb, *additional), stdin: final_values.to_yaml(line_width: -1))
       true
     end
 

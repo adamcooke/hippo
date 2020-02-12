@@ -30,7 +30,7 @@ module Hippo
     end
 
     def yaml
-      @object.to_yaml
+      @object.to_yaml(line_width: -1)
     end
 
     def yaml_to_apply

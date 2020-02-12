@@ -130,9 +130,13 @@ module Hippo
         raise Error, 'Cannot create edit file because no key is available for decryption'
       end
 
-      contents = decrypt(File.read(path))
-      contents = Util.open_in_editor('secret', contents)
-      write_file(contents)
+      old_contents = decrypt(File.read(path))
+      new_contents = Util.open_in_editor('secret', old_contents)
+      if old_contents != new_contents
+        write_file(new_contents)
+      else
+        puts 'No changes detected. Not re-encrypting secret file.'
+      end
     end
 
     def write_file(contents)

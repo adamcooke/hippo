@@ -15,17 +15,7 @@ module Hippo
     CIPHER = OpenSSL::Cipher.new('aes-256-gcm')
 
     def path
-      File.join(@stage.manifest.root, 'secrets', @stage.name + '.yaml')
-    end
-
-    def secret(name)
-      Secret.new(self, name)
-    end
-
-    def secrets
-      Dir[File.join(root, '*.{yml,yaml}')].map do |path|
-        secret(path.split('/').last.sub(/\.ya?ml\z/, ''))
-      end
+      File.join(@stage.config_root, 'secrets.yaml')
     end
 
     # Download the current key from the Kubernetes API and set it as the
@@ -35,6 +25,7 @@ module Hippo
     def download_key
       return if @key
 
+      puts 'Downloading secret encryption key...'
       value = @stage.get('secret', 'hippo-secret-key').first
       return if value.nil?
       return if value.dig('data', 'key').nil?
@@ -118,7 +109,7 @@ module Hippo
 
       return if exists?
 
-      yaml = { 'example' => 'This is an example secret!' }.to_yaml
+      yaml = { 'example' => 'This is an example secret2!' }.to_yaml
       FileUtils.mkdir_p(File.dirname(path))
       File.open(path, 'w') { |f| f.write(encrypt(yaml)) }
     end
@@ -129,6 +120,8 @@ module Hippo
       unless key_available?
         raise Error, 'Cannot create edit file because no key is available for decryption'
       end
+
+      puts path
 
       old_contents = decrypt(File.read(path))
       new_contents = Util.open_in_editor('secret', old_contents)

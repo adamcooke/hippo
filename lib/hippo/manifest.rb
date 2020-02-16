@@ -63,29 +63,13 @@ module Hippo
       @options['images']
     end
 
-    # Load all stages that are available in the manifest
-    #
-    # @return [Hash<Symbol, Hippo::Stage>]
-    def stages
-      objects('stages').each_with_object({}) do |(_, objects), hash|
-        objects.each do |obj|
-          stage = Stage.new(self, obj)
-          hash[stage.name] = stage
-        end
-      end
-    end
-
     # Load all YAML objects at a given path and return them.
     #
     # @param path [String]
     # @param decorator [Proc] an optional parser to run across the raw YAML file
     # @return [Array<Hash>]
     def objects(path, decorator: nil)
-      files = Dir[File.join(@root, path, '*.{yaml,yml}')]
-      files.each_with_object({}) do |path, objects|
-        file = Util.load_yaml_from_file(path, decorator: decorator)
-        objects[path.sub(%r{\A#{@root}/}, '')] = file
-      end
+      Util.load_objects_from_path(File.join(@root, path, '*.{yaml,yml}'), decorator: decorator)
     end
   end
 end

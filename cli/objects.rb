@@ -3,10 +3,6 @@
 command :objects do
   desc 'Display all objects that will be exported'
 
-  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
-    options[:hippofile] = value.to_s
-  end
-
   option '-t', '--type [TYPE]', 'Limit which type of object to return (one of config, deployments or services)' do |value, options|
     options[:type] = value
   end

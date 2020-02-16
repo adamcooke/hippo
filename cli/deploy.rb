@@ -3,10 +3,6 @@
 command :deploy do
   desc 'Deploy the application to Kubernetes (including image build/push)'
 
-  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
-    options[:hippofile] = value.to_s
-  end
-
   option '--no-jobs', 'Do not run the deploy jobs' do |_value, options|
     options[:jobs] = false
   end

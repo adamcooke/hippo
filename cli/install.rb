@@ -3,10 +3,6 @@
 command :install do
   desc 'Run installation jobs for the application'
 
-  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
-    options[:hippofile] = value.to_s
-  end
-
   option '--no-deploy', 'Do not deploy after install' do |_value, options|
     options[:deploy] = false
   end

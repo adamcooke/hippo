@@ -3,10 +3,6 @@
 command :logs do
   desc 'Display logs for a particular pod'
 
-  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
-    options[:hippofile] = value.to_s
-  end
-
   option '-p', '--pod [POD]', 'The name of the pod' do |value, options|
     options[:pod] = value
   end

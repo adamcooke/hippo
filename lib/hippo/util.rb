@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'yaml'
+require 'open3'
 require 'hippo/error'
 require 'hippo/object_definition'
 
@@ -30,6 +31,14 @@ module Hippo
         end
       end
 
+      def load_objects_from_path(path, decorator: nil)
+        files = Dir[path]
+        files.each_with_object({}) do |path, objects|
+          file = load_yaml_from_file(path, decorator: decorator)
+          objects[path] = file
+        end
+      end
+
       def create_object_definitions(hash, stage, required_kinds: nil, clean: false)
         index = 0
         hash.each_with_object([]) do |(path, objects), array|
@@ -55,6 +64,10 @@ module Hippo
       end
 
       def open_in_editor(name, contents)
+        if ENV['EDITOR'].nil?
+          raise Error, 'No EDITOR environment variable has been defined'
+        end
+
         tmp_root = File.join(ENV['HOME'], '.hippo')
         FileUtils.mkdir_p(tmp_root)
         begin
@@ -101,6 +114,15 @@ module Hippo
         response = STDIN.gets
         response = response.to_s.strip
         response.empty? ? default : response
+      end
+
+      def system(command, stdin_data: nil)
+        stdout, stderr, status = Open3.capture3(command, stdin_data: stdin_data)
+        unless status.success?
+          raise Error, "Command failed to execute: #{stderr}"
+        end
+
+        stdout
       end
     end
   end

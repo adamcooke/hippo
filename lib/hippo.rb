@@ -35,4 +35,11 @@ module Hippo
 
     stdout.strip
   end
+
+  # Path to store temp files
+  #
+  # @return [String]
+  def self.tmp_root
+    File.join(ENV['HOME'], '.hippo')
+  end
 end

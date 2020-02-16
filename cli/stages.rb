@@ -2,15 +2,12 @@
 
 command :stages do
   desc 'List all stages that are available'
-  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
-    options[:hippofile] = value.to_s
-  end
 
-  action do |context|
+  action do |_context|
     require 'hippo/manifest'
-    manifest = Hippo::Manifest.load_from_file(context.options[:hippofile] || './Hippofile')
+    wd = Hippo::WorkingDirectory.new
 
-    if manifest.stages.empty?
+    if wd.stages.empty?
       puts 'There are no stages configured yet.'
       puts 'Use the following command to create one:'
       puts
@@ -19,7 +16,7 @@ command :stages do
       exit 0
     end
 
-    manifest.stages.each do |_, stage|
+    wd.stages.each do |_, stage|
       puts "- #{stage.name}"
     end
   end

@@ -9,9 +9,11 @@ require 'hippo/liquid_filters'
 module Hippo
   class Stage
     attr_reader :manifest
+    attr_reader :config_root
 
-    def initialize(manifest, options)
+    def initialize(manifest, config_root, options)
       @manifest = manifest
+      @config_root = config_root
       @options = options
     end
 
@@ -145,32 +147,25 @@ module Hippo
     # @param objects [Array<Hippo::ObjectDefinition>]
     # @return [Hash]
     def apply(objects)
-      yaml_to_apply = objects.map(&:yaml_to_apply).join("\n")
-
       command = ['kubectl']
       command += ['--context', context] if context
       command += ['apply', '-f', '-']
-      Open3.popen3(command.join(' ')) do |stdin, stdout, stderr, wt|
-        stdin.puts yaml_to_apply
-        stdin.close
 
-        stdout = stdout.read.strip
-        stderr = stderr.read.strip
+      yaml_to_apply = objects.map(&:yaml_to_apply).join("\n")
 
-        if wt.value.success?
-          stdout.split("\n").each_with_object({}) do |line, hash|
-            next unless line =~ %r{\A([\w\/\-\.]+) (\w+)\z}
+      stdout, stderr, status = Open3.capture3(command.join(' '), stdin_data: yaml_to_apply + "\n")
 
-            object = Regexp.last_match(1)
-            status = Regexp.last_match(2)
-            hash[object] = status
+      raise Error, "[kubectl] #{stderr}" unless status.success?
 
-            status = "\e[32m#{status}\e[0m" unless status == 'unchanged'
-            puts "\e[37m====> #{object} #{status}\e[0m"
-          end
-        else
-          raise Error, "[kubectl] #{stderr}"
-        end
+      stdout.split("\n").each_with_object({}) do |line, hash|
+        next unless line =~ %r{\A([\w\/\-\.]+) (\w+)\z}
+
+        object = Regexp.last_match(1)
+        status = Regexp.last_match(2)
+        hash[object] = status
+
+        status = "\e[32m#{status}\e[0m" unless status == 'unchanged'
+        puts "\e[37m====> #{object} #{status}\e[0m"
       end
     end
 

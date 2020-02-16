@@ -3,10 +3,6 @@
 command :'package:list' do
   desc 'List all available packages with status'
 
-  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
-    options[:hippofile] = value.to_s
-  end
-
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)

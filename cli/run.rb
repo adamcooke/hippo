@@ -3,10 +3,6 @@
 command :run do
   desc 'Create and run a pod using the given image'
 
-  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
-    options[:hippofile] = value.to_s
-  end
-
   option '--command [COMMAND]', 'The command to run (defaults to /bin/bash)' do |value, options|
     options[:command] = value.to_s
   end

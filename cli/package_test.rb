@@ -3,10 +3,6 @@
 command :'package:test' do
   desc 'Test a package installation'
 
-  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
-    options[:hippofile] = value.to_s
-  end
-
   option '-p', '--package [NAME]', 'The name of the package' do |value, options|
     options[:package] = value
   end

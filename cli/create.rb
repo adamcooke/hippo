@@ -3,10 +3,6 @@
 command :create do
   desc 'Create a new stage'
 
-  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
-    options[:hippofile] = value.to_s
-  end
-
   option '-n', '--namespace [NAMESPACE]', 'The namespace for the new stage' do |value, options|
     options[:namespace] = value
   end
@@ -21,10 +17,10 @@ command :create do
 
   action do |context|
     require 'hippo/manifest'
-    manifest = Hippo::Manifest.load_from_file(context.options[:hippofile] || './Hippofile')
+    wd = Hippo::WorkingDirectory.new
 
     stage_name = CURRENT_STAGE
-    stage_path = File.join(manifest.root, 'stages', "#{stage_name}.yaml")
+    stage_path = File.join(wd.root, stage_name, 'config.yaml')
 
     if !context.options[:force] && File.file?(stage_path)
       puts "\e[31mA stage named '#{stage_name}' already exists. Use --force to overwrite configuration.\e[0m"
@@ -35,7 +31,7 @@ command :create do
 
     namespace = context.options[:namespace]
     if namespace.nil?
-      namespace = Hippo::Util.ask('Enter a namespace for this stage', default: "#{manifest.name}-#{stage_name}")
+      namespace = Hippo::Util.ask('Enter a namespace for this stage', default: "#{wd.manifest.name}-#{stage_name}")
     end
 
     context_name = context.options[:context]
@@ -49,13 +45,13 @@ command :create do
     yaml['context'] = context_name
 
     require 'hippo/bootstrap_parser'
-    yaml['config'] = Hippo::BootstrapParser.parse(manifest.bootstrap['config'])
+    yaml['config'] = Hippo::BootstrapParser.parse(wd.manifest.bootstrap['config'])
 
     require 'hippo/stage'
-    stage = Hippo::Stage.new(manifest, yaml)
+    stage = Hippo::Stage.new(wd.manifest, File.dirname(stage_path), yaml)
 
     require 'hippo/cli'
-    cli = Hippo::CLI.new(manifest, stage)
+    cli = Hippo::CLI.new(wd.manifest, stage)
     cli.apply_namespace
 
     if stage.secret_manager.key_available?
@@ -67,11 +63,11 @@ command :create do
 
     FileUtils.mkdir_p(File.dirname(stage_path))
     File.open(stage_path, 'w') { |f| f.write(yaml.to_yaml.sub(/\A---\n/m, '')) }
-    puts "Written new stage file to stages/#{stage.name}.yaml"
+    puts "Written new stage file to #{stage.name}/config.yaml"
 
-    secrets = Hippo::BootstrapParser.parse(manifest.bootstrap['secrets'])
+    secrets = Hippo::BootstrapParser.parse(wd.manifest.bootstrap['secrets'])
     stage.secret_manager.write_file(secrets.to_yaml)
-    puts "Written encrypted secrets into secrets/#{stage.name}.yaml"
+    puts "Written encrypted secrets into #{stage.name}/secrets.yaml"
 
     puts
     puts "\e[32mStage '#{stage.name}' has been created successfully.\e[0m"

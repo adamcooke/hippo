@@ -8,7 +8,7 @@ require 'hippo/error'
 require 'hippo/version'
 require 'swamp/cli'
 
-COMMANDS_WITHOUT_STAGE = %w[help init version stages].freeze
+COMMANDS_WITHOUT_STAGE = %w[help init version stages update setup].freeze
 
 begin
   cli = Swamp::CLI.new(:hippo, version: Hippo::VERSION)

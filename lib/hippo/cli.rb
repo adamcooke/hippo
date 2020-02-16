@@ -3,6 +3,7 @@
 require 'securerandom'
 require 'hippo/manifest'
 require 'hippo/deployment_monitor'
+require 'hippo/working_directory'
 
 module Hippo
   class CLI
@@ -228,10 +229,11 @@ module Hippo
     end
 
     class << self
-      def setup(context)
-        manifest = Hippo::Manifest.load_from_file(context.options[:hippofile] || './Hippofile')
+      def setup(_context)
+        wd = Hippo::WorkingDirectory.new
+        manifest = wd.manifest
 
-        stage = manifest.stages[CURRENT_STAGE]
+        stage = wd.stages[CURRENT_STAGE]
         if stage.nil?
           raise Error, "Invalid stage name `#{CURRENT_STAGE}`. Check this has been defined in in your stages directory with a matching name?"
         end

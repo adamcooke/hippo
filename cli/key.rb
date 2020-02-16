@@ -3,13 +3,10 @@
 command :key do
   desc 'Display/generate details about the secret encryption key'
 
-  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
-    options[:hippofile] = value.to_s
-  end
-
   option '-g', '--generate', 'Generate a new key' do |_value, options|
     options[:generate] = true
   end
+
   action do |context|
     require 'hippo/cli'
     cli = Hippo::CLI.setup(context)

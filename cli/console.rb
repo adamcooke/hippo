@@ -3,10 +3,6 @@
 command :console do
   desc 'Open a console based on the configuration'
 
-  option '-h', '--hippofile [RECIPE]', 'The path to the Hippofile (defaults: ./Hippofile)' do |value, options|
-    options[:hippofile] = value.to_s
-  end
-
   option '-d', '--deployment [NAME]', 'The name of the deployment to use' do |value, options|
     options[:deployment] = value.to_s
   end

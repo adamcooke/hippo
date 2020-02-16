@@ -74,7 +74,7 @@ module Hippo
           tmpfile = Tempfile.new([name, '.yaml'], tmp_root)
           tmpfile.write(contents)
           tmpfile.close
-          system("#{ENV['EDITOR']} #{tmpfile.path}")
+          Kernel.system("#{ENV['EDITOR']} #{tmpfile.path}")
           tmpfile.open
           tmpfile.read
         ensure

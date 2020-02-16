@@ -56,6 +56,7 @@ module Hippo
     end
 
     def exists?
+      return true unless tag.is_a?(RepositoryTag)
       return true if host.nil?
       return true unless can_check_for_existence?
 

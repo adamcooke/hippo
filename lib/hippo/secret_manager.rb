@@ -25,14 +25,24 @@ module Hippo
     def download_key
       return if @key
 
-      puts 'Downloading secret encryption key...'
-      value = @stage.get('secret', 'hippo-secret-key').first
-      return if value.nil?
-      return if value.dig('data', 'key').nil?
+      Util.action 'Downloading secret encryiption key...' do |state|
+        begin
+          value = @stage.get('secret', 'hippo-secret-key').first
 
-      @key = Base64.decode64(Base64.decode64(value['data']['key']))
-    rescue Hippo::Error => e
-      raise unless e.message =~ /not found/
+          if value.nil? || value.dig('data', 'key').nil?
+            state.call('not found')
+            return
+          end
+
+          @key = Base64.decode64(Base64.decode64(value['data']['key']))
+        rescue Hippo::Error => e
+          if e.message =~ /not found/
+            state.call('not found')
+          else
+            raise
+          end
+        end
+      end
     end
 
     # Is there a key availale in this manager?

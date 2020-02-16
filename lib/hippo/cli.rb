@@ -7,17 +7,20 @@ require 'hippo/working_directory'
 
 module Hippo
   class CLI
-    attr_reader :manifest
+    attr_reader :wd
     attr_reader :stage
 
     # Initialize a new CLI instance
     #
-    # @param manifest [Hippo::Manifest]
-    # @param stage [Hippo::Stage]
+    # @param wd [Hippo::WorkingDirectory]
     # @return [Hippo::CLI]
-    def initialize(manifest, stage)
-      @manifest = manifest
+    def initialize(wd, stage)
+      @wd = wd
       @stage = stage
+    end
+
+    def manifest
+      wd.manifest
     end
 
     # Verify image existence
@@ -25,7 +28,7 @@ module Hippo
     # @return [void]
     def verify_image_existence
       missing = 0
-      @stage.images.each do |_, image|
+      stage.images.each do |_, image|
         if image.exists?
           puts "Image for #{image.name} exists at #{image.image_url}"
         else
@@ -44,7 +47,7 @@ module Hippo
     #
     # @return [void]
     def preflight
-      if @stage.context.nil?
+      if stage.context.nil?
         puts "\e[33mStage does not specify a context. The current context specified"
         puts "by the kubectl config will be used (#{Hippo.current_kubectl_context}).\e[0m"
         puts
@@ -62,9 +65,9 @@ module Hippo
         {
           'kind' => 'Namespace',
           'apiVersion' => 'v1',
-          'metadata' => { 'name' => @stage.namespace, 'labels' => { 'name' => @stage.namespace } }
+          'metadata' => { 'name' => stage.namespace, 'labels' => { 'name' => stage.namespace } }
         },
-        @stage
+        stage
       )
       apply([od], 'namespace')
     end
@@ -73,19 +76,19 @@ module Hippo
     #
     # @return [void]
     def apply_config
-      apply(@stage.configs, 'configuration')
+      apply(stage.configs, 'configuration')
     end
 
     # Install all packages
     #
     # @return [void]
     def install_all_packages
-      if @stage.packages.empty?
+      if stage.packages.empty?
         puts 'There are no packages to install'
         return
       end
 
-      @stage.packages.values.each do |package|
+      stage.packages.values.each do |package|
         if package.installed?
           puts "#{package.name} is already installed. Upgrading..."
           package.upgrade
@@ -95,14 +98,14 @@ module Hippo
         end
       end
 
-      puts "Finished with #{@stage.packages.size} #{@stage.packages.size == 1 ? 'package' : 'packages'}"
+      puts "Finished with #{stage.packages.size} #{stage.packages.size == 1 ? 'package' : 'packages'}"
     end
 
     # Apply all services, ingresses and policies
     #
     # @return [void]
     def apply_services
-      apply(@stage.services, 'service')
+      apply(stage.services, 'service')
     end
 
     # Run all deploy jobs
@@ -124,7 +127,7 @@ module Hippo
     # @return [void]
     def deploy
       deployment_id = SecureRandom.hex(6)
-      deployments = @stage.deployments
+      deployments = stage.deployments
       if deployments.empty?
         puts 'There are no deployment objects defined'
         return true
@@ -139,7 +142,7 @@ module Hippo
       apply(deployments, 'deployment')
       puts 'Waiting for all deployments to roll out...'
 
-      monitor = DeploymentMonitor.new(@stage, deployment_id)
+      monitor = DeploymentMonitor.new(stage, deployment_id)
       monitor.on_success do |poll|
         if poll.replica_sets.size == 1
           puts "\e[32mDeployment rolled out successfully\e[0m"
@@ -159,8 +162,8 @@ module Hippo
         poll.pending.each do |rs|
           puts
           name = rs.name.split('-').first
-          puts "  hippo #{@stage.name} kubectl -- describe deployment \e[35m#{name}\e[0m"
-          puts "  hippo #{@stage.name} kubectl -- logs deployment/\e[35m#{name}\e[0m --all-containers"
+          puts "  hippo #{stage.name} kubectl -- describe deployment \e[35m#{name}\e[0m"
+          puts "  hippo #{stage.name} kubectl -- logs deployment/\e[35m#{name}\e[0m --all-containers"
         end
         puts
       end
@@ -175,25 +178,25 @@ module Hippo
         puts "No #{type} objects found to apply"
       else
         puts "Applying #{objects.size} #{type} #{objects.size == 1 ? 'object' : 'objects'}"
-        @stage.apply(objects)
+        stage.apply(objects)
       end
     end
 
     def run_jobs(type)
       puts "Running #{type} jobs"
-      jobs = @stage.jobs(type)
+      jobs = stage.jobs(type)
       if jobs.empty?
         puts "There are no #{type} jobs to run"
         return true
       end
 
       jobs.each do |job|
-        @stage.delete('job', job.name)
+        stage.delete('job', job.name)
       end
 
       applied_jobs = apply(jobs, 'deploy job')
 
-      timeout, jobs = @stage.wait_for_jobs(applied_jobs.keys)
+      timeout, jobs = stage.wait_for_jobs(applied_jobs.keys)
       success_jobs = []
       failed_jobs = []
       jobs.each do |job|
@@ -222,7 +225,7 @@ module Hippo
                else
                  '❌'
                end
-        puts "  #{icon}  hippo #{@stage.name} kubectl -- logs job/#{job.name}"
+        puts "  #{icon}  hippo #{stage.name} kubectl -- logs job/#{job.name}"
       end
       puts
       result
@@ -231,14 +234,13 @@ module Hippo
     class << self
       def setup(_context)
         wd = Hippo::WorkingDirectory.new
-        manifest = wd.manifest
 
         stage = wd.stages[CURRENT_STAGE]
         if stage.nil?
           raise Error, "Invalid stage name `#{CURRENT_STAGE}`. Check this has been defined in in your stages directory with a matching name?"
         end
 
-        new(manifest, stage)
+        new(wd, stage)
       end
     end
   end

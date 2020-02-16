@@ -16,15 +16,28 @@ module Hippo
     #
     # @return [String]
     def config_path
-      File.join(@root, 'hippo.yaml')
+      File.join(@root, 'manifest.yaml')
+    end
+
+    # Return the path to the local config file
+    #
+    # @return [String]
+    def local_config_path
+      File.join(@root, 'manifest.local.yaml')
     end
 
     # Return all the options configured in this working directory
     #
     # @return [Hash]
     def options
+      return @options if @options
+
       if File.file?(config_path)
-        YAML.load_file(config_path)
+        @options = YAML.load_file(config_path)
+        if File.file?(local_config_path)
+          @options = @options.deep_merge(YAML.load_file(local_config_path))
+        end
+        @options
       else
         raise Error, "No manifest config file found at #{config_path}"
       end
@@ -33,7 +46,14 @@ module Hippo
     # Return the manifest objet for this working directory
     #
     # @return [Hippo::Manifest]
-    def manifest
+    def manifest(update: true)
+      if update && !@updated_manifest
+        update_from_remote if can_update?
+        @updated_manifest = true
+      end
+
+      raise Error, 'No manifest path could be determined' if manifest_path.nil?
+
       @manifest ||= Manifest.load_from_file(File.join(manifest_path, 'Hippofile'))
     end
 
@@ -93,18 +113,29 @@ module Hippo
     # Update the local cached copy of the manifest from the remote
     #
     # @return [Boolean]
-    def update_from_remote
+    def update_from_remote(verbose: false)
       return false unless source_type == 'remote'
 
-      if File.directory?(remote_root_path)
-        Util.system("git -C #{remote_root_path} fetch")
-      else
-        FileUtils.mkdir_p(File.dirname(remote_root_path))
-        Util.system("git clone #{remote_repository} #{remote_root_path}")
+      Util.action "Updating manifest from #{remote_repository}..." do
+        if File.directory?(remote_root_path)
+          Util.system("git -C #{remote_root_path} fetch")
+        else
+          FileUtils.mkdir_p(File.dirname(remote_root_path))
+          Util.system("git clone #{remote_repository} #{remote_root_path}")
+        end
+
+        Util.system("git -C #{remote_root_path} checkout origin/#{remote_branch}")
+        File.open(update_timestamp_path, 'w') { |f| f.write(Time.now.to_i.to_s + "\n") }
       end
 
-      Util.system("git -C #{remote_root_path} checkout origin/#{remote_branch}")
-      File.open(update_timestamp_path, 'w') { |f| f.write(Time.now.to_i.to_s + "\n") }
+      if verbose
+        puts
+        puts "  Repository....: \e[33m#{wd.remote_repository}\e[0m"
+        puts "  Branch........: \e[33m#{wd.remote_branch}\e[0m"
+        puts "  Path..........: \e[33m#{wd.remote_path}\e[0m"
+        puts
+      end
+
       true
     end
 
@@ -140,7 +171,7 @@ module Hippo
       objects = Util.load_objects_from_path(File.join(@root, '**', 'config.{yml,yaml}'))
       objects.each_with_object({}) do |(path, objects), hash|
         objects.each do |obj|
-          stage = Stage.new(manifest, File.dirname(path), obj)
+          stage = Stage.new(self, File.dirname(path), obj)
           hash[stage.name] = stage
         end
       end

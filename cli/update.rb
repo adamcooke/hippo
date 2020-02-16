@@ -17,14 +17,6 @@ command :update do
       puts 'Does not exist yet. Downloading for the first time.'
     end
 
-    puts "Updating from #{wd.remote_repository}..."
-    wd.update_from_remote
-
-    puts "\e[32mUpdate completed successfully.\e[0m"
-    puts
-    puts "  Repository....: \e[33m#{wd.remote_repository}\e[0m"
-    puts "  Branch........: \e[33m#{wd.remote_branch}\e[0m"
-    puts "  Path..........: \e[33m#{wd.remote_path}\e[0m"
-    puts
+    wd.update_from_remote(verbose: true)
   end
 end

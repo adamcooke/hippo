@@ -124,6 +124,21 @@ module Hippo
 
         stdout
       end
+
+      def action(message)
+        $stdout.print message
+        complete_state = 'done'
+        color = '32'
+        passed_proc = proc do |value|
+          complete_state = value
+          color = '33'
+        end
+        yield(passed_proc)
+        puts " \e[#{color}m#{complete_state}\e[0m"
+      rescue StandardError => e
+        puts " \e[31merror\e[0m"
+        raise
+      end
     end
   end
 end

@@ -8,13 +8,17 @@ require 'hippo/liquid_filters'
 
 module Hippo
   class Stage
-    attr_reader :manifest
+    attr_reader :wd
     attr_reader :config_root
 
-    def initialize(manifest, config_root, options)
-      @manifest = manifest
+    def initialize(wd, config_root, options)
+      @wd = wd
       @config_root = config_root
       @options = options
+    end
+
+    def manifest
+      wd.manifest
     end
 
     def name
@@ -42,7 +46,7 @@ module Hippo
     end
 
     def images
-      @images ||= @manifest.images.deep_merge(@options['images'] || {}).each_with_object({}) do |(key, image), hash|
+      @images ||= manifest.images.deep_merge(@options['images'] || {}).each_with_object({}) do |(key, image), hash|
         hash[key] = Image.new(key, image)
       end
     end
@@ -51,14 +55,14 @@ module Hippo
     def template_vars
       @template_vars ||= begin
         {
-          'manifest' => @manifest.template_vars,
+          'manifest' => manifest.template_vars,
           'stage-name' => name,
           'branch' => branch,
           'image-tag' => image_tag,
           'namespace' => namespace,
           'context' => context,
           'images' => images.values.each_with_object({}) { |image, hash| hash[image.name] = image.template_vars },
-          'config' => @manifest.config.deep_merge(config),
+          'config' => manifest.config.deep_merge(config),
           'secrets' => secret_manager.all
         }
       end
@@ -78,7 +82,7 @@ module Hippo
     end
 
     def objects(path)
-      @manifest.objects(path, decorator: decorator)
+      manifest.objects(path, decorator: decorator)
     end
 
     def secret_manager

@@ -48,10 +48,10 @@ command :create do
     yaml['config'] = Hippo::BootstrapParser.parse(wd.manifest.bootstrap['config'])
 
     require 'hippo/stage'
-    stage = Hippo::Stage.new(wd.manifest, File.dirname(stage_path), yaml)
+    stage = Hippo::Stage.new(wd, File.dirname(stage_path), yaml)
 
     require 'hippo/cli'
-    cli = Hippo::CLI.new(wd.manifest, stage)
+    cli = Hippo::CLI.new(wd, stage)
     cli.apply_namespace
 
     if stage.secret_manager.key_available?

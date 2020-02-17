@@ -141,5 +141,27 @@ module Hippo
         raise
       end
     end
+
+    def self.parse_kubectl_apply_lines(stdout)
+      stdout.split("\n").each_with_object({}) do |line, hash|
+        if line =~ %r{\A([\w\/\-\.]+) (\w+)\z}
+          object = Regexp.last_match(1)
+          status = Regexp.last_match(2)
+        elsif line =~ %r{\A[\w\.\/\-]+ \"([\w\-]+)\" (\w+)\z}
+          object = Regexp.last_match(1)
+          status = Regexp.last_match(2)
+        else
+          next
+        end
+        hash[object] = status
+
+        color = '32'
+        color = '31' if status == 'deleted'
+        color = '33' if status == 'configured'
+
+        status = "\e[#{color}m#{status}\e[0m" unless status == 'unchanged'
+        puts "\e[37m====> #{object} #{status}\e[0m"
+      end
+    end
   end
 end

@@ -210,16 +210,7 @@ module Hippo
 
       raise Error, "[kubectl] #{stderr}" unless status.success?
 
-      stdout.split("\n").each_with_object({}) do |line, hash|
-        next unless line =~ %r{\A([\w\/\-\.]+) (\w+)\z}
-
-        object = Regexp.last_match(1)
-        status = Regexp.last_match(2)
-        hash[object] = status
-
-        status = "\e[32m#{status}\e[0m" unless status == 'unchanged'
-        puts "\e[37m====> #{object} #{status}\e[0m"
-      end
+      Util.parse_kubectl_apply_lines(stdout)
     end
 
     # Get some data from the kubernetes API
@@ -242,19 +233,16 @@ module Hippo
     # @return [Boolean]
     def delete(*names)
       command = kubectl('delete', *names)
-      Open3.popen3(*command) do |_, stdout, stderr, wt|
-        if wt.value.success?
-          stdout.read.split("\n").each do |line|
-            puts "\e[37m====> #{line}\e[0m"
-          end
-          true
+      stdout, stderr, status = Open3.capture3(*command)
+      if status.success?
+        Util.parse_kubectl_apply_lines(stdout)
+        true
+      else
+        stderr = stderr.read
+        if stderr =~ /\" not found$/
+          false
         else
-          stderr = stderr.read
-          if stderr =~ /\" not found$/
-            false
-          else
-            raise Error, "[kutectl] #{stderr}"
-          end
+          raise Error, "[kutectl] #{stderr}"
         end
       end
     end

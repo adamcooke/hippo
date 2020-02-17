@@ -30,8 +30,9 @@ module Hippo
       return nil if @options['url'].nil?
 
       @remote_refs ||= begin
-        puts "Getting remote refs from #{@options['url']}"
-        Git.ls_remote(@options['url'])
+        Util.action "Getting remote refs from #{@options['url']}..." do
+          Git.ls_remote(@options['url'])
+        end
       end
     end
   end

@@ -51,6 +51,18 @@ module Hippo
       end
     end
 
+    def readme
+      return @readme if instance_variable_defined?('@readme')
+
+      path = File.join(@root, 'readme.txt')
+      unless File.file?(path)
+        @readme = nil
+        return
+      end
+
+      @readme = File.read(path)
+    end
+
     def template_vars
       {
         'name' => name

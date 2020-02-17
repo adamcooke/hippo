@@ -133,8 +133,9 @@ module Hippo
           complete_state = value
           color = '33'
         end
-        yield(passed_proc)
+        return_value = yield(passed_proc)
         puts " \e[#{color}m#{complete_state}\e[0m"
+        return_value
       rescue StandardError => e
         puts " \e[31merror\e[0m"
         raise

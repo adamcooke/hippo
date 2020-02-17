@@ -81,6 +81,42 @@ module Hippo
       end
     end
 
+    def readme
+      return unless manifest.readme
+
+      decorator.call(manifest.readme)
+    end
+
+    # Return an array of objects that currently exist on the kubernetesa
+    # API.
+    #
+    # @return [Array<Hash>]
+    def live_objects(pruneable_only: false)
+      los = get(all_objects.keys.join(','), '--selector', 'app.kubernetes.io/managed-by=hippo')
+      los.each_with_object([]) do |live_obj, array|
+        local = all_objects.dig(live_obj.kind, live_obj.name)
+        pruneable = local.nil? && (live_obj.kind != 'Secret' && live_obj.name != 'hippo-secret-key')
+
+        next if pruneable_only && !pruneable
+
+        array << {
+          live: live_obj,
+          local: local,
+          pruneable: pruneable
+        }
+      end
+    end
+
+    # Remove any objects which are prunable
+    #
+    # @return [void]
+    def delete_pruneable_objects
+      live_objects(pruneable_only: true).each do |object|
+        object = object[:live]
+        delete(object.kind, object.name)
+      end
+    end
+
     def objects(path)
       manifest.objects(path, decorator: decorator)
     end
@@ -116,6 +152,19 @@ module Hippo
     def jobs(type)
       @jobs ||= {}
       @jobs[type] ||= Util.create_object_definitions(objects("jobs/#{type}"), self)
+    end
+
+    # Return an array of all objects that should be managed by Hippo
+    #
+    # @return [Hash]
+    def all_objects
+      @all_objects ||= begin
+        all = (deployments | services | configs | jobs('install') | jobs('deploy'))
+        all.each_with_object({}) do |object, hash|
+          hash[object.kind] ||= {}
+          hash[object.kind][object.name] = object
+        end
+      end
     end
 
     # Return a hash of all packages available in the stage

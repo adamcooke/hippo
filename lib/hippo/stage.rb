@@ -238,7 +238,6 @@ module Hippo
         Util.parse_kubectl_apply_lines(stdout)
         true
       else
-        stderr = stderr.read
         if stderr =~ /\" not found$/
           false
         else

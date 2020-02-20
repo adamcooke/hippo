@@ -52,7 +52,7 @@ command :setup do
 
     require 'yaml'
     config = { 'source' => source }
-    File.open(File.join(path, 'hippo.yaml'), 'w') { |f| f.write(config.to_yaml) }
+    File.open(File.join(path, 'manifest.yaml'), 'w') { |f| f.write(config.to_yaml) }
     puts "Created configuration directory at #{path}"
 
     require 'hippo/working_directory'

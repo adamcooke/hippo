@@ -36,6 +36,10 @@ module Hippo
       @options['console']
     end
 
+    def commands
+      @options['commands'] || {}
+    end
+
     def config
       @options['config'] || {}
     end

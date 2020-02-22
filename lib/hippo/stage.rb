@@ -45,6 +45,16 @@ module Hippo
       @options['config']
     end
 
+    def command(name)
+      base = manifest.commands[name]
+      return nil if base.nil?
+
+      {
+        target: base['target'],
+        command: decorator.call(base['command'])
+      }
+    end
+
     def images
       @images ||= manifest.images.deep_merge(@options['images'] || {}).each_with_object({}) do |(key, image), hash|
         hash[key] = Image.new(key, image)

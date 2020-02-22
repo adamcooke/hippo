@@ -12,7 +12,7 @@ command :run do
     cli = Hippo::CLI.setup(context)
     cli.preflight
 
-    image = cli.stage.images.values.first
+    image = cli.stage.images[context.options[:image]] || cli.stage.images.values.first
     raise Error, "No image exists at #{image.image_url}" unless image.exists?
 
     command = context.options[:command] || '/bin/bash'

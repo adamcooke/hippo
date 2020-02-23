@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Viewing application status | Hippo</title>
+    <meta name="description" content="Kubernetes deployment toolkit">
+    <meta name="generator" content="VuePress 1.3.1">
+    
+    
+    <link rel="preload" href="/hippo/assets/css/0.styles.50f5afac.css" as="style"><link rel="preload" href="/hippo/assets/js/app.b04199ea.js" as="script"><link rel="preload" href="/hippo/assets/js/2.d83d8343.js" as="script"><link rel="preload" href="/hippo/assets/js/15.8a0c17a3.js" as="script"><link rel="prefetch" href="/hippo/assets/js/10.8a96ecc0.js"><link rel="prefetch" href="/hippo/assets/js/11.da559e82.js"><link rel="prefetch" href="/hippo/assets/js/12.5440a5fd.js"><link rel="prefetch" href="/hippo/assets/js/13.9248b3aa.js"><link rel="prefetch" href="/hippo/assets/js/14.b392259a.js"><link rel="prefetch" href="/hippo/assets/js/16.b4083c06.js"><link rel="prefetch" href="/hippo/assets/js/3.ed1d9c25.js"><link rel="prefetch" href="/hippo/assets/js/4.1551477e.js"><link rel="prefetch" href="/hippo/assets/js/5.9d20a555.js"><link rel="prefetch" href="/hippo/assets/js/6.27217335.js"><link rel="prefetch" href="/hippo/assets/js/7.0e4232b2.js"><link rel="prefetch" href="/hippo/assets/js/8.0692184c.js"><link rel="prefetch" href="/hippo/assets/js/9.422d30b4.js">
+    <link rel="stylesheet" href="/hippo/assets/css/0.styles.50f5afac.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/hippo/" class="home-link router-link-active"><!----> <span class="site-name">Hippo</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/hippo/" class="nav-link">
+  Documentation
+</a></div><div class="nav-item"><a href="https://github.com/adamcooke/hippo/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Code
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://slack.adam.ac" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Slack
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/hippo/" class="nav-link">
+  Documentation
+</a></div><div class="nav-item"><a href="https://github.com/adamcooke/hippo/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Code
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://slack.adam.ac" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Slack
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Getting Started</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/hippo/" class="sidebar-link">Welcome to Hippo 🦛</a></li><li><a href="/hippo/install.html" class="sidebar-link">Installing</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Using Hippo</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/hippo/using/" class="sidebar-link">Setting up</a></li><li><a href="/hippo/using/creating-a-stage.html" class="sidebar-link">Creating a stage</a></li><li><a href="/hippo/using/configuration.html" class="sidebar-link">Configuring a stage</a></li><li><a href="/hippo/using/preparing.html" class="sidebar-link">Preparing the cluster</a></li><li><a href="/hippo/using/installing-the-application.html" class="sidebar-link">Installing the application</a></li><li><a href="/hippo/using/status.html" class="active sidebar-link">Viewing application status</a></li><li><a href="/hippo/using/deploying-updates.html" class="sidebar-link">Deploying updates</a></li><li><a href="/hippo/using/console-and-commands.html" class="sidebar-link">Console and commands</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Writing manifests</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/hippo/manifests/" class="sidebar-link">Application manifests</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="viewing-application-status"><a href="#viewing-application-status" class="header-anchor">#</a> Viewing application status</h1> <p>tus` command is very useful for determing the current state of the running application at any time. This will list all key objects from the Kubernetes API.</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>hippo <span class="token punctuation">[</span>stage-name<span class="token punctuation">]</span> status
+<span class="token comment"># NAME                            READY   STATUS    RESTARTS   AGE</span>
+<span class="token comment"># pod/cron-8469bc5554-c8lfn       1/1     Running   0          7m9s</span>
+<span class="token comment"># pod/mariadb-0                   2/2     Running   0          11m</span>
+<span class="token comment"># pod/rabbitmq-0                  2/2     Running   0          11m</span>
+<span class="token comment"># pod/requeuer-685bd5fcc6-p999d   1/1     Running   0          7m9s</span>
+<span class="token comment"># pod/smtp-6b5c46fcdf-tbfjx       1/1     Running   0          7m9s</span>
+<span class="token comment"># pod/web-67c8796c56-s5bfv        1/1     Running   0          7m9s</span>
+<span class="token comment"># pod/worker-6b45b9c7cb-8659w     1/1     Running   0          7m9s</span>
+<span class="token comment"># pod/worker-6b45b9c7cb-hv7bl     1/1     Running   0          7m9s</span>
+<span class="token comment">#</span>
+<span class="token comment"># NAME                                TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                                          AGE</span>
+<span class="token comment"># service/cm-acme-http-solver-s2h58   NodePort       10.99.15.72      &lt;none&gt;         8089:30459/TCP                                   6m50s</span>
+<span class="token comment"># service/mariadb                     ClusterIP      10.96.244.101    &lt;none&gt;         3306/TCP,9104/TCP                                11m</span>
+<span class="token comment"># service/rabbitmq                    ClusterIP      10.111.144.180   &lt;none&gt;         4369/TCP,5672/TCP,25672/TCP,15672/TCP,9419/TCP   11m</span>
+<span class="token comment"># service/rabbitmq-headless           ClusterIP      None             &lt;none&gt;         4369/TCP,5672/TCP,25672/TCP,15672/TCP            11m</span>
+<span class="token comment"># service/smtp                        LoadBalancer   10.110.193.247   185.53.57.49   25:31482/TCP                                     6m51s</span>
+<span class="token comment"># service/web                         ClusterIP      10.99.93.232     &lt;none&gt;         80/TCP                                           6m52s</span>
+<span class="token comment">#</span>
+<span class="token comment"># NAME                                           HOSTS                 ADDRESS         PORTS     AGE</span>
+<span class="token comment"># ingress.extensions/cm-acme-http-solver-fzzk9   postal.mydomain.com   185.53.57.153   80        6m50s</span>
+<span class="token comment"># ingress.extensions/postal-web                  postal.mydomain.com   185.53.57.153   80, 443   6m52s</span>
+<span class="token comment">#</span>
+<span class="token comment"># NAME                       READY   UP-TO-DATE   AVAILABLE   AGE</span>
+<span class="token comment"># deployment.apps/cron       1/1     1            1           7m10s</span>
+<span class="token comment"># deployment.apps/requeuer   1/1     1            1           7m10s</span>
+<span class="token comment"># deployment.apps/smtp       1/1     1            1           7m10s</span>
+<span class="token comment"># deployment.apps/web        1/1     1            1           7m10s</span>
+<span class="token comment"># deployment.apps/worker     2/2     2            2           7m10s</span>
+<span class="token comment">#</span>
+<span class="token comment"># NAME                        READY   AGE</span>
+<span class="token comment"># statefulset.apps/mariadb    1/1     11m</span>
+<span class="token comment"># statefulset.apps/rabbitmq   1/1     11m</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br></div></div><p>You can optionally pass <code>--full</code> to this output to display additional objects which are needed less often.</p></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/hippo/using/installing-the-application.html" class="prev">
+        Installing the application
+      </a></span> <span class="next"><a href="/hippo/using/deploying-updates.html">
+        Deploying updates
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/hippo/assets/js/app.b04199ea.js" defer></script><script src="/hippo/assets/js/2.d83d8343.js" defer></script><script src="/hippo/assets/js/15.8a0c17a3.js" defer></script>
+  </body>
+</html>

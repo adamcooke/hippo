@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Console and commands | Hippo</title>
+    <meta name="description" content="Kubernetes deployment toolkit">
+    <meta name="generator" content="VuePress 1.3.1">
+    
+    
+    <link rel="preload" href="/hippo/assets/css/0.styles.50f5afac.css" as="style"><link rel="preload" href="/hippo/assets/js/app.b04199ea.js" as="script"><link rel="preload" href="/hippo/assets/js/2.d83d8343.js" as="script"><link rel="preload" href="/hippo/assets/js/10.8a96ecc0.js" as="script"><link rel="prefetch" href="/hippo/assets/js/11.da559e82.js"><link rel="prefetch" href="/hippo/assets/js/12.5440a5fd.js"><link rel="prefetch" href="/hippo/assets/js/13.9248b3aa.js"><link rel="prefetch" href="/hippo/assets/js/14.b392259a.js"><link rel="prefetch" href="/hippo/assets/js/15.8a0c17a3.js"><link rel="prefetch" href="/hippo/assets/js/16.b4083c06.js"><link rel="prefetch" href="/hippo/assets/js/3.ed1d9c25.js"><link rel="prefetch" href="/hippo/assets/js/4.1551477e.js"><link rel="prefetch" href="/hippo/assets/js/5.9d20a555.js"><link rel="prefetch" href="/hippo/assets/js/6.27217335.js"><link rel="prefetch" href="/hippo/assets/js/7.0e4232b2.js"><link rel="prefetch" href="/hippo/assets/js/8.0692184c.js"><link rel="prefetch" href="/hippo/assets/js/9.422d30b4.js">
+    <link rel="stylesheet" href="/hippo/assets/css/0.styles.50f5afac.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/hippo/" class="home-link router-link-active"><!----> <span class="site-name">Hippo</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/hippo/" class="nav-link">
+  Documentation
+</a></div><div class="nav-item"><a href="https://github.com/adamcooke/hippo/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Code
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://slack.adam.ac" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Slack
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/hippo/" class="nav-link">
+  Documentation
+</a></div><div class="nav-item"><a href="https://github.com/adamcooke/hippo/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Code
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://slack.adam.ac" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Slack
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Getting Started</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/hippo/" class="sidebar-link">Welcome to Hippo 🦛</a></li><li><a href="/hippo/install.html" class="sidebar-link">Installing</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Using Hippo</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/hippo/using/" class="sidebar-link">Setting up</a></li><li><a href="/hippo/using/creating-a-stage.html" class="sidebar-link">Creating a stage</a></li><li><a href="/hippo/using/configuration.html" class="sidebar-link">Configuring a stage</a></li><li><a href="/hippo/using/preparing.html" class="sidebar-link">Preparing the cluster</a></li><li><a href="/hippo/using/installing-the-application.html" class="sidebar-link">Installing the application</a></li><li><a href="/hippo/using/status.html" class="sidebar-link">Viewing application status</a></li><li><a href="/hippo/using/deploying-updates.html" class="sidebar-link">Deploying updates</a></li><li><a href="/hippo/using/console-and-commands.html" class="active sidebar-link">Console and commands</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Writing manifests</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/hippo/manifests/" class="sidebar-link">Application manifests</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="console-and-commands"><a href="#console-and-commands" class="header-anchor">#</a> Console and commands</h1> <p>Interacting with a running application is usually essential.</p> <p>Application manifests can define a series of command aliases which can be easily executed within your instance when needed. This is very useful for accessing application or database consoles and manifest authors are encouraged to make these available.</p> <p>These aliases can be used to run commands within an EXISTING running pod in the application.</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>hippo staging <span class="token builtin class-name">exec</span> console
+<span class="token comment"># Downloading secret encryiption key... done</span>
+<span class="token comment"># Defaulting container name to cuetip.</span>
+<span class="token comment"># Use 'kubectl describe pod/worker-557686bb6c-tzqqd -n postal' to see all of the containers in this pod.</span>
+<span class="token comment"># Loading production environment (Rails 6.0.1)</span>
+<span class="token comment"># irb(main):001:0&gt;</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br></div></div><p>As you can see above, running <code>exec console</code> has hooked into a <code>worker</code> pod and executed an application console which we can now use as normal.</p> <p>Alternatively, the manifest author may provide commands to look at database consoles directly, for example:</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>hippo <span class="token punctuation">[</span>stage-name<span class="token punctuation">]</span> <span class="token builtin class-name">exec</span> mysql
+<span class="token comment"># Downloading secret encryiption key... done</span>
+<span class="token comment"># Defaulting container name to mariadb.</span>
+<span class="token comment"># Use 'kubectl describe pod/mariadb-master-0 -n postal' to see all of the containers in this pod.</span>
+<span class="token comment"># Reading table information for completion of table and column names</span>
+<span class="token comment"># You can turn off this feature to get a quicker startup with -A</span>
+<span class="token comment">#</span>
+<span class="token comment"># Welcome to the MariaDB monitor.  Commands end with ; or \g.</span>
+<span class="token comment"># Your MariaDB connection id is 394533</span>
+<span class="token comment"># Server version: 10.3.21-MariaDB-log Source distribution</span>
+<span class="token comment">#</span>
+<span class="token comment"># Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.</span>
+<span class="token comment">#</span>
+<span class="token comment"># Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.</span>
+<span class="token comment">#</span>
+<span class="token comment"># MariaDB [postal]&gt;</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br></div></div><p>For a full list of the aliases that are provided for the application you can use the <code>--list</code> option.</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>hippo <span class="token punctuation">[</span>stage-name<span class="token punctuation">]</span> <span class="token builtin class-name">exec</span> --list
+<span class="token comment"># console      Opens a Rails console (on deployment/worker)</span>
+<span class="token comment"># mysql        Opens a MySQL console (on pod/mariadb-master-0)</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/hippo/using/deploying-updates.html" class="prev">
+        Deploying updates
+      </a></span> <span class="next"><a href="/hippo/manifests/">
+        Application manifests
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/hippo/assets/js/app.b04199ea.js" defer></script><script src="/hippo/assets/js/2.d83d8343.js" defer></script><script src="/hippo/assets/js/10.8a96ecc0.js" defer></script>
+  </body>
+</html>

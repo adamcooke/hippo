@@ -168,7 +168,7 @@ module Hippo
     #
     # @return [Hash<Symbol, Hippo::Stage>]
     def stages
-      objects = Util.load_objects_from_path(File.join(@root, '**', 'config.{yml,yaml}'))
+      objects = Util.load_objects_from_path(File.join(@root, '*', 'config.{yml,yaml}'))
       objects.each_with_object({}) do |(path, objects), hash|
         objects.each do |obj|
           stage = Stage.new(self, File.dirname(path), obj)

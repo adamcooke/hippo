@@ -12,7 +12,6 @@ Gem::Specification.new do |s|
   s.authors       = ['Adam Cooke']
   s.email         = ['me@adamcooke.io']
   s.licenses      = ['MIT']
-  s.cert_chain    = ['certs/adamcooke.pem']
   s.bindir = 'bin'
   s.executables << 'hippo'
   if $PROGRAM_NAME =~ /gem\z/

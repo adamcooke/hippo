@@ -8,7 +8,7 @@ These aliases can be used to run commands within an EXISTING running pod in the 
 
 ```bash
 hippo staging exec console
-# Downloading secret encryiption key... done
+# Downloading secret encryption key... done
 # Defaulting container name to cuetip.
 # Use 'kubectl describe pod/worker-557686bb6c-tzqqd -n postal' to see all of the containers in this pod.
 # Loading production environment (Rails 6.0.1)
@@ -21,7 +21,7 @@ Alternatively, the manifest author may provide commands to look at database cons
 
 ```bash
 hippo [stage-name] exec mysql
-# Downloading secret encryiption key... done
+# Downloading secret encryption key... done
 # Defaulting container name to mariadb.
 # Use 'kubectl describe pod/mariadb-master-0 -n postal' to see all of the containers in this pod.
 # Reading table information for completion of table and column names

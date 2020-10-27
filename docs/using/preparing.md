@@ -19,7 +19,7 @@ hippo [stage-name] prepare
 # Applying 1 namespace object
 # Updating manifest from https://github.com/postalhq/k8s-hippo... done
 # ====> namespace/postal-demo unchanged
-# Downloading secret encryiption key... done
+# Downloading secret encryption key... done
 # Applying 1 configuration object
 # ====> secret/postal-config created
 # Installing rabbitmq using Helm...

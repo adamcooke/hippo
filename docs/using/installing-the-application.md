@@ -28,7 +28,7 @@ hippo [stage-name] install
 # Image for main exists at adamcooke/postal:docker
 # Applying 1 namespace object
 # ====> namespace/postal-demo unchanged
-# Downloading secret encryiption key... done
+# Downloading secret encryption key... done
 # Applying 1 configuration object
 # ====> secret/postal-config unchanged
 # Running install jobs

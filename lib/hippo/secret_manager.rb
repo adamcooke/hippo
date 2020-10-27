@@ -25,7 +25,7 @@ module Hippo
     def download_key
       return if @key
 
-      Util.action 'Downloading secret encryiption key...' do |state|
+      Util.action 'Downloading secret encryption key...' do |state|
         begin
           value = @stage.get('secret', 'hippo-secret-key').first
 

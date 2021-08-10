@@ -26,6 +26,13 @@ module Hippo
       @options['package']
     end
 
+    # Return the version of the chart to be used
+    #
+    # @return [String]
+    def chart_version
+      @options['chart_version']
+    end
+
     # return values defined in the package's manifest file
     #
     # @return [Hash]
@@ -89,6 +96,9 @@ module Hippo
     private
 
     def install_command(verb, *additional)
+      if chart_version
+        additional = ['--version', chart_version] + additional
+      end
       helm(verb, name, package, '-f', '-', *additional)
     end
 
@@ -98,6 +108,7 @@ module Hippo
     end
 
     def run(command, stdin: nil)
+      puts command
       stdout, stderr, status = Open3.capture3(*command, stdin_data: stdin)
       raise Error, "[helm] #{stderr}" unless status.success?
 
